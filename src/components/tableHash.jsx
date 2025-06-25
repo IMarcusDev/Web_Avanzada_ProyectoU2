@@ -2,7 +2,12 @@ import { Hash } from "./chain"
 
 const current_time = Date.now().toString();
 
+// localstorage.getitem('data'):
+// Se espera: [{ text: 'Hola', time: '123456789' (Date.now().toString()) }]
+
 export function HashTable() {
+  const data = JSON.parse(localStorage.getItem('data')).rows;
+
   return <>
   <table>
     <thead>
@@ -14,9 +19,9 @@ export function HashTable() {
       </tr>
     </thead>
     <tbody>
-      <Hash chain={'Hola'} time={current_time}></Hash>
-      <Hash chain={'Hola'} time={current_time}></Hash>
-      <Hash chain={'Hola'} time={current_time}></Hash>
+      {data.map((element, i) => {
+        return <Hash key={i} chain={element.text} time={element.time}></Hash>
+      })}
     </tbody>
   </table>
   </>

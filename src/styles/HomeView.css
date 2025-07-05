@@ -1,15 +1,85 @@
-/* HomeView.css */
 .main-container {
     display: flex;
     flex-direction: row;
     width: 100vw;
     height: 100vh;
-    background-color: #03A6A1;
+    background: linear-gradient(120deg, #f8fafc 0%, #e0e7ef 100%);
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
 }
 
 .sideBar {
     display: flex;
     flex-direction: column;
-    background-color: #FFE3BB;
-    width: 40vh;
+    background: #FFE3BB;
+    width: 15vw;
+    min-width: 200px;
+    box-shadow: 2px 0 12px 0 rgba(0,0,0,0.04);
+    padding: 32px 0;
+    border: solid black 3px;
+    border-radius: 0 24px 24px 0;
+}
+
+.sideBar ul {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sideBar li {
+    margin: 0;
+    padding: 0;
+}
+
+.sideBar a {
+    display: block;
+    padding: 10px 32px;
+    color: #22223b;
+    text-decoration: none;
+    font-size: 1.5rem;
+    border-radius: 0 20px 20px 0;
+    transition: background 0.2s, color 0.2s, font-weight 0.2s;
+    letter-spacing: 0.5px;
+}
+
+.sideBar a:hover,
+.sideBar a.active {
+    background: #FFA673;
+    color: white;
+    font-weight: 600;
+}
+
+.sideBar button {
+    width: 80%;
+    margin: 40px auto 0 auto;
+    padding: 12px 0;
+    background: linear-gradient(90deg, #ff9770 0%, #ffd670 100%);
+    color: #22223b;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(255, 151, 112, 0.08);
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+    display: block;
+}
+
+.sideBar button:hover {
+    background: linear-gradient(90deg, #ffa673 0%, #03A6A1 100%);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.container-componets {
+    flex: 1;
+    padding: 40px 48px;
+    background: transparent;
+    overflow-y: auto;
+    border-radius: 24px 0 0 24px;
+    box-shadow: none;
+    min-width: 0;
 }

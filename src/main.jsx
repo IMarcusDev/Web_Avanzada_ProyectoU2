@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import { Login } from './components/login.jsx'
+import { Login } from './views/Login.jsx'
 import { HashTable } from './components/tableHash.jsx'
 import { App } from './App.jsx'
 import "./index.css"

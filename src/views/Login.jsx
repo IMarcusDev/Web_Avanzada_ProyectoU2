@@ -8,7 +8,7 @@ export const Login = () => {
     const navigate = useNavigate();
 
     const handleLogin = () => {
-        navigate('/HomeView');
+        navigate('/HomeView/welcomePage');
     };
 
     return(

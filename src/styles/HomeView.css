@@ -1,0 +1,15 @@
+/* HomeView.css */
+.main-container {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    background-color: #03A6A1;
+}
+
+.sideBar {
+    display: flex;
+    flex-direction: column;
+    background-color: #FFE3BB;
+    width: 40vh;
+}

@@ -12,7 +12,7 @@ export const HomeView = () => {
                             <Link to="welcomePage">Home</Link>
                         </li>
                         <li>
-                            <Link to="welcomePage">Cargar archivo</Link>
+                            <Link to="file">Cargar archivo</Link>
                         </li>
                         <li>
                             <Link to="chain">Listado Cadenas</Link>
@@ -21,7 +21,7 @@ export const HomeView = () => {
                              <Link to="welcomePage">Auditoria de la cadena</Link>
                         </li>
                         <li>
-                            <Link to="welcomePage">Configuración de número de ceros</Link>
+                            <Link to="zeroPaddingConfig">Configuración de número de ceros</Link>
                         </li>
                         <li>
                             <Link to="welcomePage">Documentación</Link>

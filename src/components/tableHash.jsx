@@ -23,7 +23,7 @@ export function HashTable() {
     </thead>
     <tbody>
       {data.map((element, i) => {
-        return <Hash key={i} chain={element.text} time={element.time}></Hash>
+        return <Hash key={i} idx={i} chain={element.text} time={element.time}></Hash>
       })}
     </tbody>
   </table>

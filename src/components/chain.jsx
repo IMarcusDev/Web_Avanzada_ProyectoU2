@@ -13,8 +13,11 @@ function generateHash(chain, seed, time) {
 }
 
 // Hash Component: table row
-export function Hash({chain, time}) {
+export function Hash({idx, chain, time}) {
   const hash = generateHash(chain, current_seed, time);
+  const previousHashes = JSON.parse(localStorage.getItem("hashes")) || [];
+  const updatedHashes = [...previousHashes, { id: idx, hash: hash }];
+  localStorage.setItem("hashes", JSON.stringify(updatedHashes));
 
   const comp = <>
     <tr>

@@ -1,0 +1,10 @@
+.integrantes {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 35px 10px;
+  border-radius: 20px;
+}
+
+.integrantes .col {
+  padding: 15px;
+}

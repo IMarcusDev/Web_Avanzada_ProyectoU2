@@ -1,5 +1,6 @@
 import { Outlet, Link, useNavigate} from "react-router-dom";
 import "../styles/HomeView.css";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 export const HomeView = () => {
     const navigate = useNavigate();
@@ -8,34 +9,34 @@ export const HomeView = () => {
             <div className="main-container">
                 <section className="sideBar">
                     <ul>
-                        <li>
-                            <Link to="welcomePage">Home</Link>
+                        <li className="display-2">
+                            <Link to="welcomePage"><i className="bi bi-house"></i> Home</Link>
                         </li>
-                        <li>
-                            <Link to="file">Cargar archivo</Link>
+                        <li className="display-2">
+                            <Link to="file"><i className="bi bi-upload"></i> Cargar archivo</Link>
                         </li>
-                        <li>
-                            <Link to="chain">Listado Cadenas</Link>
+                        <li className="display-2">
+                            <Link to="chain"><i className="bi bi-link-45deg"></i> Listado Cadenas</Link>
                         </li>
-                        <li>
-                            <Link to="AuditoriaPage">Auditoria de la cadena</Link>
+                        <li className="display-2">
+                            <Link to="AuditoriaPage"><i className="bi bi-journal-check"></i> Auditoria de la cadena</Link>
                         </li>
-                        <li>
-                            <Link to="zeroPaddingConfig">Configuración de número de ceros</Link>
+                        <li className="display-2">
+                            <Link to="zeroPaddingConfig"><i className="bi bi-gear"></i> Configuración de número de ceros</Link>
                         </li>
-                        <li>
-                            <Link to="DocumentationPage">Documentación</Link>
+                        <li className="display-2">
+                            <Link to="DocumentationPage"><i className="bi bi-file-earmark-text"></i> Documentación</Link>
                         </li>
-                        <li>
-                            <Link to="welcomePage">Mascotas Software</Link>
+                        <li className="display-2">
+                            <Link to="welcomePage"><i className="bi bi-house"></i> Mascotas Software</Link>
                         </li>
-                        <li>
-                            <Link to="welcomePage">Listado de puntos</Link>
+                        <li className="display-2">
+                            <Link to="welcomePage"><i className="bi bi-geo-alt"></i> Listado de puntos</Link>
                         </li>
                     </ul>
 
-                    <button onClick={() => navigate("/")}>
-                        Salir
+                    <button className="display-2" onClick={() => navigate("/")}>
+                        <i className="bi bi-box-arrow-right"></i> Salir
                     </button>
                 </section>
                 <section className="container-componets">

@@ -4,26 +4,33 @@
     width: 100vw;
     height: 100vh;
     background: linear-gradient(120deg, #f8fafc 0%, #e0e7ef 100%);
-    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
 }
 
 .sideBar {
     display: flex;
     flex-direction: column;
-    background: #FFE3BB;
-    width: 15vw;
+    width: 17vw;
     min-width: 200px;
-    box-shadow: 2px 0 12px 0 rgba(0,0,0,0.04);
     padding: 32px 0;
-    border: solid black 3px;
-    border-radius: 0 24px 24px 0;
+    font-weight: 400;
+}
+
+.sideBar::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px; /* Grosor del borde */
+    height: 100%;
+    background: linear-gradient(to bottom, #ff0000, #0000ff); /* Degradado del borde */
 }
 
 .sideBar ul {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 20px;
+    gap: 0.5vw;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -32,44 +39,45 @@
 .sideBar li {
     margin: 0;
     padding: 0;
+    text-align: left;
+    font-weight: 400;
+    font-size: 1vw;
 }
 
 .sideBar a {
     display: block;
     padding: 10px 32px;
-    color: #22223b;
+    color:  black;
     text-decoration: none;
-    font-size: 1.5rem;
-    border-radius: 0 20px 20px 0;
+    font-size: 1.4rem;
     transition: background 0.2s, color 0.2s, font-weight 0.2s;
     letter-spacing: 0.5px;
 }
 
-.sideBar a:hover,
-.sideBar a.active {
-    background: #FFA673;
+.sideBar a:hover{
+    background: #a3a1a2;
     color: white;
-    font-weight: 600;
 }
 
 .sideBar button {
     width: 80%;
     margin: 40px auto 0 auto;
     padding: 12px 0;
-    background: linear-gradient(90deg, #ff9770 0%, #ffd670 100%);
+    background: #a3a1a2;
     color: #22223b;
     border: none;
-    border-radius: 16px;
     font-size: 1.1rem;
-    font-weight: 600;
+    font-weight: 400;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(255, 151, 112, 0.08);
     transition: background 0.2s, color 0.2s, transform 0.15s;
     display: block;
+    border-color: black;
+    border-radius: 1vw;
 }
 
 .sideBar button:hover {
-    background: linear-gradient(90deg, #ffa673 0%, #03A6A1 100%);
+    background: #d40b0b;
     color: #fff;
     transform: translateY(-2px);
 }

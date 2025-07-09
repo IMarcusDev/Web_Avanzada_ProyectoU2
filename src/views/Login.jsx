@@ -16,7 +16,7 @@ export const Login = () => {
         <div className="login-background">
             <section className="login-section">
                 <div className="login-icon">
-                    <img src={userIcon} alt="User Icon" />
+                    <img src={inputIconUser} alt="User Icon" />
                 </div>
                 <div className="login-container">
                     <div className="input-container">
@@ -35,14 +35,14 @@ export const Login = () => {
                                 <img src={inputIconUser} alt="Input User Icon" />
                             </div>
                             <div>
-                                <input type="Text" placeholder="Password"></input>
+                                <input type="Password" placeholder="Password"></input>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className="footer-login">
                     <div>
-                        <button onClick={handleLogin}>Login</button>
+                        <button className="display-2" onClick={handleLogin} >LOGIN</button>
                     </div>
                 </div>
             </section>

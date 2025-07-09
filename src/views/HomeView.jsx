@@ -31,7 +31,7 @@ export const HomeView = () => {
                             <Link to="welcomePage"><i className="bi bi-house"></i> Mascotas Software</Link>
                         </li>
                         <li className="display-2">
-                            <Link to="welcomePage"><i className="bi bi-geo-alt"></i> Listado de puntos</Link>
+                            <Link to="welcomePage"><i className="bi bi-list"></i> Listado de puntos</Link>
                         </li>
                     </ul>
 

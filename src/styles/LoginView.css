@@ -4,9 +4,17 @@
   align-items: center;       
   height: 100vh;             
   margin: 0;                 
-  background: #654ea3;
-  background: -webkit-linear-gradient(to right, #eaafc8, #654ea3);
-  background: linear-gradient(to right, #eaafc8, #654ea3);
+  background-image: url("../assets/images/fondo.jpg");
+  background-size: cover;          /* Ajusta la imagen para cubrir todo el contenedor */
+  background-position: center;     /* Centra la imagen */
+  background-repeat: no-repeat;    /* Evita que la imagen se repita */
+}
+
+.login-background::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(228, 219, 219, 0.1); /* negro 2con 40% opacidad */
 }
 
 .login-section{
@@ -25,17 +33,14 @@
   width: 100px;
   height: 100px;
   line-height: 100px;
-  top: 5dvh;
-  left: 23dvh;
+  top: 10dvh;
   z-index: 100;
-  background-color: azure;
-  border-radius: 80%;
 }
 
 .login-icon img {
-    vertical-align: middle;
-    display: inline-block;
-    width: 100px;
+  vertical-align: middle;
+  display: inline-block;
+  width: 90px;
 }
 
 .login-container {
@@ -51,7 +56,7 @@
   justify-content: center;
   align-items: center;
   width: 400px;
-  height: 300px;
+  height: 250px;
 }
 
 .input-container{
@@ -67,37 +72,42 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: stretch;
-  height: 30px;         
+  height: 30px;       
+  color: white;  
 }
 
 .input-field input{
   height: 100%;       
   box-sizing: border-box;
+  background: none;
+  border-bottom: 1px solid black;
+  color: white;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  margin-left: 5px;
 }
 
 .input-icon img{
-  width: 30px;
-  background-color: gray;
+  width: 30px;  
 }
 
 .footer-login {
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 24px 0 rgba(31, 38, 135, 0.17);
-  width: 60%;
-  height: 70px;
+  background: rgb(0, 0, 0);
+  box-shadow: 0 4px 24px 0 rgb(255, 255, 255);
+  width: 40%;
+  height: 60px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   border-radius: 0 0 24px 24px;
-  margin-top: -10px;
-}
+  }
 
 .footer-login button{
   background-color: transparent;
-  color: #1b1c1d;
+  color: white;
   padding: 10px 20px;
-  font-weight: bold;
   font-size: 20px;
   border: 0;
   cursor: pointer;

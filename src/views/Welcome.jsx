@@ -2,9 +2,9 @@
 // Datos personales de cada integrante: fotos, breve descripción
 // Copiar datos de anterior proyecto
 import '../styles/welcome.css'
-import { Historia } from './welcome/Historia';
-import { Integrantes } from './welcome/Integrantes';
-import { TableEstudiantes } from './welcome/TableEstudiantes';
+import { Historia } from '../components/welcome/Historia';
+import { Integrantes } from '../components/welcome/Integrantes';
+import { TableEstudiantes } from '../components/welcome/TableEstudiantes';
 
 export const Welcome = () => {
   return (

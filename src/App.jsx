@@ -2,11 +2,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Login } from "./views/Login";
 import { HashTable } from "./components/tableHash";
 import { HomeView } from "./views/HomeView";
-import { Welcome } from "./components/welcome";
+import { Welcome } from "./views/Welcome";
 import { ManejarCargaArchivo } from "./components/fileText";
 import { ManejarRellenoCeros } from "./components/numberZero";
 import { Auditoria} from "./views/Auditoria";
 import { Documentation} from "./views/Documentation";
+
 export const App = () => {
     return(
         <BrowserRouter>

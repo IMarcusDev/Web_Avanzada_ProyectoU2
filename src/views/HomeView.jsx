@@ -36,7 +36,7 @@ export const HomeView = () => {
                     </ul>
 
                     <button className="display-2" onClick={() => navigate("/")}>
-                        <i className="bi bi-box-arrow-right"></i> Salir
+                        <i className="bi bi-box-arrow-right"></i> SALIR
                     </button>
                 </section>
                 <section className="container-componets">

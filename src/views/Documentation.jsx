@@ -1,6 +1,6 @@
 import React from 'react';
 import LoginImg from '../assets/images/login.png';
-// import WelcomeImg from '../assets/images/welcome.png';
+import WelcomeImg from '../assets/images/welcome.png';
 import UploadImg from '../assets/images/upload.png';
 import ListImg from '../assets/images/list.png';
 import AuditoriaImg from '../assets/images/Auditoria.png';
@@ -16,7 +16,7 @@ const screenshots = [
     },
     {
     title: 'Pantalla de Bienvenida',
-    src: ' WelcomeImg',
+    src: WelcomeImg,
     description: 'Presenta información general del sistema y del nodo actual conectado a la red.',
     },
     {

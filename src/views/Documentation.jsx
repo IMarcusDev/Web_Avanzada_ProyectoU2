@@ -1,18 +1,17 @@
 import React from 'react';
-// import LoginImg from '../assets/images/login.png';
+import LoginImg from '../assets/images/login.png';
 // import WelcomeImg from '../assets/images/welcome.png';
-// import UploadImg from '../assets/images/upload.png';
-// import ResponseImg from '../assets/images/response.png';
-// import ListImg from '../assets/images/list.png';
+import UploadImg from '../assets/images/upload.png';
+import ListImg from '../assets/images/list.png';
 import AuditoriaImg from '../assets/images/Auditoria.png';
-// import ConfigImg from '../assets/images/config.png';
+import ConfigImg from '../assets/images/config.png';
 // import LogoImg from '../assets/images/logo.png';
 // import PointsImg from '../assets/images/points.png';
 
 const screenshots = [
     {
     title: 'Inicio de Sesión',
-    src: 'LoginImg',
+    src: LoginImg,
     description: 'Autenticación de usuarios para acceder a la red blockchain y sus funcionalidades.',
     },
     {
@@ -22,17 +21,12 @@ const screenshots = [
     },
     {
     title: 'Carga de Archivo',
-    src: 'UploadImg',
+    src: UploadImg,
     description: 'Interfaz para subir archivos que serán hashados y registrados como bloques en la cadena.',
     },
     {
-    title: 'Validación de Carga',
-    src: 'ResponseImg',
-    description: 'Muestra la respuesta del sistema tras registrar el bloque y anexarlo a la cadena existente.',
-    },
-    {
     title: 'Listado de Cadenas',
-    src: 'ListImg',
+    src: ListImg,
     description: 'Visualiza todos los bloques registrados, incluyendo su hash, timestamp y datos asociados.',
     },
     {
@@ -42,7 +36,7 @@ const screenshots = [
     },
     {
     title: 'Configuración de Dificultad',
-    src: 'ConfigImg',
+    src: ConfigImg,
     description: 'Ajusta parámetros como el número de ceros requeridos en el hash para validar un bloque (proof of work).',
     },
     {
@@ -74,10 +68,10 @@ export const Documentation = () => (
                     <img
                         src={shot.src}
                         alt={shot.title}
-                        className="mb-4 rounded"
+                        className="mb-4 rounded col"
                         style={{ maxWidth: '100%', maxHeight: '500px', objectFit: 'contain', border: '1px solid #eee' }}
                     />
-                    <p className=" mt-3 text-gray-700 text-center">{shot.description}</p>
+                    <h5 className=" mb-5 text-gray-700 text-center ">{shot.description}</h5>
                 </div>
             ))}
         </div> 

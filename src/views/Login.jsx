@@ -5,6 +5,7 @@ import inputIconUser from "../assets/login/input-icon-user.svg";
 
 
 export const Login = () => {
+    localStorage.removeItem("hashes");
     const navigate = useNavigate();
 
     const handleLogin = () => {
@@ -16,7 +17,7 @@ export const Login = () => {
         <div className="login-background">
             <section className="login-section">
                 <div className="login-icon">
-                    <img src={inputIconUser} alt="User Icon" />
+                    <img src={userIcon} alt="User Icon" />
                 </div>
                 <div className="login-container">
                     <div className="input-container">

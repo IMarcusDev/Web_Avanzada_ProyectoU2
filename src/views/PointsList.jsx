@@ -1,4 +1,5 @@
 import {RowItems} from "../components/RowItems.jsx";
+import "../styles/points.css"
 
 export const PointsList = () => {
     const names = ["Marcos", "Juan", "Carlos", "Mateo"];
@@ -18,7 +19,8 @@ export const PointsList = () => {
     });
 
     return (
-        <div className="Container">
+        <div className="container">
+            <h1>Listado de puntos</h1>
             <table>
                 <thead>
                     <tr>
@@ -26,7 +28,7 @@ export const PointsList = () => {
                         <th>Nombre</th>
                         <th>Apellido</th>
                         <th>Punto</th>
-                        <th>Cadena</th>
+                        <th>Cadena Semilla</th>
                     </tr>
                 </thead>
                 <tbody>

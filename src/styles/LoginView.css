@@ -41,6 +41,9 @@
   vertical-align: middle;
   display: inline-block;
   width: 90px;
+  -moz-user-select: none;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 .login-container {
@@ -90,6 +93,9 @@
 
 .input-icon img{
   width: 30px;  
+  -moz-user-select: none;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 .footer-login {

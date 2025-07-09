@@ -1,0 +1,8 @@
+.container {
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.6);
+    border-radius: 15px;
+}
+
+h1{
+    text-align: center;
+}

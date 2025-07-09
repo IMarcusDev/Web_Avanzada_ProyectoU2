@@ -5,8 +5,8 @@ import UploadImg from '../assets/images/upload.png';
 import ListImg from '../assets/images/list.png';
 import AuditoriaImg from '../assets/images/Auditoria.png';
 import ConfigImg from '../assets/images/config.png';
-// import LogoImg from '../assets/images/logo.png';
-// import PointsImg from '../assets/images/points.png';
+import LogoImg from '../assets/images/petSoftware.png';
+import PointsImg from '../assets/images/pointsList.png';
 
 const screenshots = [
     {
@@ -41,12 +41,12 @@ const screenshots = [
     },
     {
     title: 'Identidad Visual',
-    src: 'LogoImg',
+    src: LogoImg,
     description: 'Logotipo o mascota institucional que representa el sistema blockchain desarrollado.',
     },
     {
     title: 'Listado de Nodos',
-    src: 'PointsImg',
+    src: PointsImg,
     description: 'Muestra los nodos conectados a la red blockchain y su estado de sincronización.',
     },
 ];

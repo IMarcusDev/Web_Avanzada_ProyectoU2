@@ -5,7 +5,8 @@ import { HomeView } from "./views/HomeView";
 import { Welcome } from "./components/welcome";
 import { ManejarCargaArchivo } from "./components/fileText";
 import { ManejarRellenoCeros } from "./components/numberZero";
-
+import { Auditoria} from "./views/Auditoria";
+import { Documentation} from "./views/Documentation";
 export const App = () => {
     return(
         <BrowserRouter>
@@ -16,6 +17,8 @@ export const App = () => {
                     <Route path='chain' element={<HashTable />} />
                     <Route path="file" element={<ManejarCargaArchivo/>}/>
                     <Route path="zeroPaddingConfig" element={<ManejarRellenoCeros/>}/>
+                    <Route path="AuditoriaPage" element={<Auditoria/>}/>
+                    <Route path="DocumentationPage" element={<Documentation/>}/>
                 </Route>
             </Routes>
         </BrowserRouter>

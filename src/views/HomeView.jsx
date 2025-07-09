@@ -18,13 +18,13 @@ export const HomeView = () => {
                             <Link to="chain">Listado Cadenas</Link>
                         </li>
                         <li>
-                             <Link to="welcomePage">Auditoria de la cadena</Link>
+                            <Link to="AuditoriaPage">Auditoria de la cadena</Link>
                         </li>
                         <li>
                             <Link to="zeroPaddingConfig">Configuración de número de ceros</Link>
                         </li>
                         <li>
-                            <Link to="welcomePage">Documentación</Link>
+                            <Link to="DocumentationPage">Documentación</Link>
                         </li>
                         <li>
                             <Link to="welcomePage">Mascotas Software</Link>

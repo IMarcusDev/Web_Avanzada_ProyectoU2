@@ -3,8 +3,8 @@ import { Login } from './views/Login.jsx'
 import { HashTable } from './components/tableHash.jsx'
 import { App } from './App.jsx'
 import "./index.css"
+import "./styles/forms.css"
 
-// Testing
 localStorage.setItem('data', JSON.stringify(
   {
     rows: [

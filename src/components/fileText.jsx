@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 function VerificarArchivo(nombreArchivo){
-    
     if(nombreArchivo.trim().length === 0){
         alert("No se ah ingreso ningun archivo, intente de nuevo")
     }else{
@@ -20,38 +19,64 @@ function VerificarTexto(texto){
 export function ManejarCargaArchivo(){
     const [archivo,setArchivo] = useState('');
     const [texto,setTexto] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const onSubmit = (event)=>{
+    const onSubmit = async (event) => {
         event.preventDefault();
-        VerificarArchivo(archivo);
-        VerificarTexto(texto);
+        setIsLoading(true);
+        
+        // Simular proceso de carga
+        setTimeout(() => {
+            VerificarArchivo(archivo);
+            VerificarTexto(texto);
+            setIsLoading(false);
+        }, 1000);
     }
 
     return(
-        <>
-            <div className="d-flex justify-content-center">
-                <form onSubmit={onSubmit} className="p-4 border rounded bg-light">
-                    <h4 className="display-4">INGRESO DE ARCHIVO</h4>
-                    <div className="input-group input-group-sm mb-3 d-flex justify-content-center">
-                        <label htmlFor="SubirArchivo">Ingrese un archivo con la extension (.pdf o .txt)</label>
-                    </div>
-                    <div className="input-group input-group-sm mb-3 d-flex justify-content-center">
-                        <input type="file" className="btn btn-secondary custom-file-label" accept=".txt, .pdf" onChange={(event) => setArchivo(event.target.files[0].name)}/>
-                    </div>
-                    <div className="input-group input-group-sm mb-3 d-flex justify-content-center">
-                        <label htmlFor="Comentario">Ingrese un comentario:</label>
-                    </div>
-                    <div className="input-group input-group-sm mb-3 d-flex justify-content-center">
-                        <textarea className="input-group-text" placeholder="Ingrese un comentario" rows="14" cols="55" onChange={(event) => setTexto(event.target.value)}/>
-                    </div>
-                    <div className=" d-flex justify-content-center">
-                        <button type="submit" className="btn btn-primary" >Enviar</button>
-                    </div>
-                </form>
-            </div>
-            
-        </>
+        <div className="form-glass-container">
+            <form onSubmit={onSubmit} className="form-glass">
+                <h4 className="form-title display-4">INGRESO DE ARCHIVO</h4>
+                
+                <div className="input-group">
+                    <label htmlFor="SubirArchivo" className="form-label">
+                        Ingrese un archivo con la extensión (.pdf o .txt)
+                    </label>
+                    <input 
+                        type="file" 
+                        className="btn btn-secondary custom-file-label" 
+                        accept=".txt, .pdf" 
+                        onChange={(event) => setArchivo(event.target.files[0]?.name || '')}
+                    />
+                </div>
+
+                <div className="input-group">
+                    <label htmlFor="Comentario" className="form-label">
+                        Ingrese un comentario:
+                    </label>
+                    <textarea 
+                        className="form-control" 
+                        placeholder="Ingrese un comentario" 
+                        rows="8" 
+                        onChange={(event) => setTexto(event.target.value)}
+                        style={{
+                            resize: 'vertical',
+                            minHeight: '120px'
+                        }}
+                    />
+                </div>
+
+                <div className="d-flex justify-content-center">
+                    <button 
+                        type="submit" 
+                        className="btn btn-primary"
+                        disabled={isLoading}
+                    >
+                        {isLoading && <span className="loading-spinner"></span>}
+                        {isLoading ? 'Procesando...' : 'Enviar'}
+                    </button>
+                </div>
+            </form>
+        </div>
     )
 }
-
-

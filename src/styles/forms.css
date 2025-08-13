@@ -1,0 +1,501 @@
+/* forms.css - Estilos modernos para formularios con liquid glass effect */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Contenedor principal de formularios */
+.form-glass-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  padding: 2rem;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Formulario principal con liquid glass */
+.form-glass {
+  /* Liquid Glass Effect */
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-glass::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(0, 0, 0, 0.02) 100%
+  );
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.form-glass:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 12px 40px 0 rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Títulos de formulario */
+.form-title {
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
+  
+  background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.form-title.display-4 {
+  font-size: 2.2rem;
+}
+
+.form-title.display-6 {
+  font-size: 1.6rem;
+}
+
+.form-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #4a4a4a, transparent);
+  border-radius: 2px;
+}
+
+/* Labels */
+.form-label {
+  color: #2a2a2a;
+  font-weight: 500;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  display: block;
+  position: relative;
+  z-index: 2;
+}
+
+/* Grupos de input */
+.input-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* Input fields con glass effect */
+.form-control,
+.form-control-file,
+.input-group-text,
+textarea.input-group-text {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: #1a1a1a;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.form-control:focus,
+.form-control-file:focus,
+textarea.input-group-text:focus {
+  background: rgba(255, 255, 255, 0.4);
+  border-color: rgba(74, 144, 226, 0.5);
+  box-shadow: 
+    0 0 0 3px rgba(74, 144, 226, 0.1),
+    0 4px 12px rgba(74, 144, 226, 0.15);
+  outline: none;
+}
+
+.form-control::placeholder,
+textarea.input-group-text::placeholder {
+  color: rgba(26, 26, 26, 0.6);
+  font-weight: 400;
+}
+
+/* File input especial */
+.btn.btn-secondary.custom-file-label {
+  background: rgba(74, 144, 226, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(74, 144, 226, 0.3);
+  color: #1a1a1a;
+  font-weight: 500;
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn.btn-secondary.custom-file-label::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.btn.btn-secondary.custom-file-label:hover::before {
+  left: 100%;
+}
+
+.btn.btn-secondary.custom-file-label:hover {
+  background: rgba(74, 144, 226, 0.2);
+  border-color: rgba(74, 144, 226, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(74, 144, 226, 0.2);
+}
+
+/* Textarea especial */
+textarea.input-group-text {
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+/* Input con prefijo */
+.input-group .input-group-text {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+  color: #2a2a2a;
+  font-weight: 600;
+}
+
+.input-group .form-control {
+  border-left: none;
+  border-radius: 0 12px 12px 0;
+}
+
+/* Botón principal */
+.btn.btn-primary {
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.875rem 2rem;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  
+  box-shadow: 0 4px 16px rgba(74, 144, 226, 0.3);
+}
+
+.btn.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.btn.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn.btn-primary:hover {
+  background: linear-gradient(135deg, #357abd 0%, #2a5d8f 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+}
+
+.btn.btn-primary:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(74, 144, 226, 0.3);
+}
+
+/* Contenedor centrado */
+.d-flex.justify-content-center {
+  position: relative;
+  z-index: 2;
+}
+
+/* Animaciones de entrada */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-glass {
+  animation: slideInFromBottom 0.6s ease-out;
+}
+
+/* Estados de error y éxito */
+.form-control.error {
+  border-color: rgba(220, 38, 38, 0.5);
+  background: rgba(220, 38, 38, 0.05);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.form-control.success {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(34, 197, 94, 0.05);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+/* Mensajes de validación */
+.validation-message {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.validation-message.error {
+  color: #dc2626;
+}
+
+.validation-message.success {
+  color: #22c55e;
+}
+
+/* Indicadores de carga */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #ffffff;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Efectos de partículas para formularios */
+.form-glass::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.2), transparent),
+    radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.1), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(0, 0, 0, 0.1), transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.2), transparent);
+  background-repeat: repeat;
+  background-size: 150px 80px;
+  animation: floatParticles 25s linear infinite;
+  pointer-events: none;
+  opacity: 0.3;
+  border-radius: inherit;
+}
+
+@keyframes floatParticles {
+  0% { transform: translateY(0px) translateX(0px); }
+  25% { transform: translateY(-5px) translateX(2px); }
+  50% { transform: translateY(2px) translateX(-2px); }
+  75% { transform: translateY(-3px) translateX(1px); }
+  100% { transform: translateY(0px) translateX(0px); }
+}
+
+/* Configuración especial para formulario de ceros */
+.zero-config-form {
+  padding-top: 30vh;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.zero-config-form .form-glass {
+  max-width: 400px;
+  padding: 2.5rem 2rem;
+}
+
+/* Estilos para el input de número */
+input[type="number"].form-control {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+input[type="number"].form-control::-webkit-outer-spin-button,
+input[type="number"].form-control::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"].form-control {
+  -moz-appearance: textfield;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .form-glass-container {
+    padding: 1rem;
+  }
+  
+  .form-glass {
+    padding: 2rem 1.5rem;
+    max-width: 100%;
+  }
+  
+  .form-title {
+    font-size: 1.5rem;
+  }
+  
+  .form-title.display-4 {
+    font-size: 1.8rem;
+  }
+  
+  .form-title.display-6 {
+    font-size: 1.4rem;
+  }
+  
+  textarea.input-group-text {
+    min-height: 100px;
+  }
+  
+  .zero-config-form {
+    padding-top: 20vh;
+  }
+}
+
+@media (max-width: 576px) {
+  .form-glass {
+    padding: 1.5rem 1rem;
+    border-radius: 20px;
+  }
+  
+  .form-title {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .btn.btn-primary {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .form-control,
+  .form-control-file,
+  .input-group-text,
+  textarea.input-group-text {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9rem;
+  }
+  
+  .zero-config-form {
+    padding-top: 15vh;
+  }
+}
+
+/* Estilos para modo oscuro (opcional) */
+@media (prefers-color-scheme: dark) {
+  .form-glass {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .form-title {
+    background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .form-label {
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .form-control,
+  .form-control-file,
+  .input-group-text,
+  textarea.input-group-text {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .form-control::placeholder,
+  textarea.input-group-text::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .btn.btn-secondary.custom-file-label {
+    background: rgba(74, 144, 226, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+/* Mejoras de accesibilidad */
+.form-control:focus,
+.btn:focus {
+  outline: 2px solid rgba(74, 144, 226, 0.5);
+  outline-offset: 2px;
+}
+
+/* Transiciones suaves para todos los elementos */
+* {
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}

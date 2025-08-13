@@ -1,7 +1,365 @@
-table {
+/* chain.css - Diseño moderno con liquid glass effect para tablas hash */
+
+@import url('https://fonts.googleapis.com/css2?family="JetBrains Mono":wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Contenedor principal */
+.hash-container {
+  padding: 2rem;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Título principal con efecto gradiente */
+.display-3 {
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+  
+  background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 70%, #6a6a6a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.display-3::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #4a4a4a, transparent);
+  border-radius: 2px;
+}
+
+.display-3::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #6a6a6a, transparent);
+  border-radius: 2px;
+}
+
+/* Tabla principal con liquid glass */
+.table {
   width: 100%;
-  table-layout: fixed;
+  table-layout: auto;
   word-wrap: break-word;
   text-align: center;
-  font-size: 15px;
+  font-size: 0.9rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  
+  /* Liquid Glass Effect */
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.table::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(0, 0, 0, 0.02) 100%
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Header de la tabla */
+.table thead {
+  position: relative;
+  z-index: 2;
+}
+
+.thead-light th {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  padding: 1.2rem 1rem;
+  border: none;
+  position: relative;
+}
+
+.thead-light th::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  pointer-events: none;
+}
+
+/* Filas del cuerpo de la tabla */
+.table tbody {
+  position: relative;
+  z-index: 2;
+}
+
+.table tbody tr {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  border: none;
+}
+
+.table tbody tr::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.1)
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.table tbody tr:hover::before {
+  opacity: 1;
+}
+
+.table tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Celdas */
+.table td {
+  padding: 1rem;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  color: #2a2a2a;
+  font-weight: 500;
+  position: relative;
+  z-index: 2;
+  vertical-align: middle;
+}
+
+/* Estilo especial para hashes */
+.table td:last-child {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.8rem;
+  font-weight: 400;
+  background: rgba(0, 0, 0, 0.02);
+  color: #4a4a4a;
+  letter-spacing: 0.5px;
+  word-break: break-all;
+}
+
+/* Filas alternadas */
+.table tbody tr:nth-child(even) td {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.table tbody tr:nth-child(even) td:last-child {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* Efectos hover para celdas de hash */
+.table tbody tr:hover td:last-child {
+  background: rgba(74, 144, 226, 0.1);
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+/* Estilos para tablas striped y bordered */
+.table-striped tbody tr:nth-of-type(odd) td {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.table-hover tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.table-bordered {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.table-bordered td,
+.table-bordered th {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Animaciones de carga */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.table tbody tr {
+  animation: fadeInScale 0.4s ease-out;
+}
+
+.table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+.table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+.table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+.table tbody tr:nth-child(4) { animation-delay: 0.4s; }
+.table tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
+/* Efectos de shimmer para datos importantes */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.table td:last-child::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.table tbody tr:hover td:last-child::after {
+  opacity: 1;
+}
+
+/* Indicadores de estado para diferentes tipos de datos */
+.table td[data-type="hash"]::before {
+  content: '🔗';
+  margin-right: 0.5rem;
+  opacity: 0.6;
+}
+
+.table td[data-type="seed"]::before {
+  content: '🌱';
+  margin-right: 0.5rem;
+  opacity: 0.6;
+}
+
+.table td[data-type="time"]::before {
+  content: '⏰';
+  margin-right: 0.5rem;
+  opacity: 0.6;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .table {
+    font-size: 0.8rem;
+  }
+  
+  .table td,
+  .table th {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .table td:last-child {
+    font-size: 0.7rem;
+  }
+  
+  .display-3 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .hash-container {
+    padding: 1rem;
+  }
+  
+  .table {
+    font-size: 0.75rem;
+  }
+  
+  .table td,
+  .table th {
+    padding: 0.5rem 0.25rem;
+  }
+  
+  .display-3 {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+  }
+  
+  /* Scroll horizontal para móviles */
+  .table-responsive {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 1rem;
+  }
+}
+
+/* Scroll personalizado para tabla responsive */
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
 }

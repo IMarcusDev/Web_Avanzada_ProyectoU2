@@ -4,31 +4,30 @@
 import CryptoJS from "crypto-js";
 
 const first_seed = 'ESPE';
-export let current_seed = first_seed;
 
 function generateHash(chain, seed, time) {
   const data = chain + seed + time;
-
   return CryptoJS.SHA256(data).toString(CryptoJS.enc.Hex);
 }
 
 // Hash Component: table row
-export function Hash({idx, chain, time}) {
-  const hash = generateHash(chain, current_seed, time);
+export function Hash({ idx, chain, time, previousHash = first_seed }) {
+  const currentSeed = previousHash || first_seed;
+  const hash = generateHash(chain, currentSeed, time);
   const previousHashes = JSON.parse(localStorage.getItem("hashes")) || [];
-  const updatedHashes = [...previousHashes, { id: idx, hash: hash }];
-  localStorage.setItem("hashes", JSON.stringify(updatedHashes));
+  const existingHash = previousHashes.find(h => h.id === idx);
+  
+  if (!existingHash) {
+    const updatedHashes = [...previousHashes, { id: idx, hash: hash }];
+    localStorage.setItem("hashes", JSON.stringify(updatedHashes));
+  }
 
-  const comp = <>
+  return (
     <tr>
-      <td>{chain}</td>
-      <td>{current_seed}</td>
-      <td>{time}</td>
-      <td>{hash}</td>
+      <td className="chain-text">{chain}</td>
+      <td className="seed-text">{currentSeed}</td>
+      <td className="time-text">{time}</td>
+      <td className="hash-text">{hash}</td>
     </tr>
-  </>
-
-  current_seed = hash;  // Actual hash is the seed for the future hash
-
-  return comp;
+  );
 }

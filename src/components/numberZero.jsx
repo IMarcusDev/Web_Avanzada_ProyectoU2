@@ -16,7 +16,6 @@ export function ManejarRellenoCeros(){
         event.preventDefault();
         setIsLoading(true);
 
-        // Simular proceso de configuración
         setTimeout(() => {
             ValidarNumeroCeros(ceros);
             setIsLoading(false);

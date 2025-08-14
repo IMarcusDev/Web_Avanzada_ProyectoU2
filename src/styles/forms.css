@@ -1,8 +1,5 @@
-/* forms.css - Estilos modernos para formularios con liquid glass effect */
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Contenedor principal de formularios */
 .form-glass-container {
   display: flex;
   justify-content: center;
@@ -12,9 +9,7 @@
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* Formulario principal con liquid glass */
 .form-glass {
-  /* Liquid Glass Effect */
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
@@ -55,21 +50,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
-/* Títulos de formulario */
-.form-title {
-  color: #1a1a1a;
-  font-weight: 700;
-  font-size: 1.8rem;
-  text-align: center;
-  margin-bottom: 2rem;
-  position: relative;
-  z-index: 2;
-  
-  background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
 
 .form-title.display-4 {
   font-size: 2.2rem;
@@ -79,19 +59,6 @@
   font-size: 1.6rem;
 }
 
-.form-title::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 50px;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, #4a4a4a, transparent);
-  border-radius: 2px;
-}
-
-/* Labels */
 .form-label {
   color: #2a2a2a;
   font-weight: 500;
@@ -102,14 +69,12 @@
   z-index: 2;
 }
 
-/* Grupos de input */
 .input-group {
   margin-bottom: 1.5rem;
   position: relative;
   z-index: 2;
 }
 
-/* Input fields con glass effect */
 .form-control,
 .form-control-file,
 .input-group-text,
@@ -144,7 +109,6 @@ textarea.input-group-text::placeholder {
   font-weight: 400;
 }
 
-/* File input especial */
 .btn.btn-secondary.custom-file-label {
   background: rgba(74, 144, 226, 0.1);
   backdrop-filter: blur(10px);
@@ -186,7 +150,6 @@ textarea.input-group-text::placeholder {
   box-shadow: 0 4px 16px rgba(74, 144, 226, 0.2);
 }
 
-/* Textarea especial */
 textarea.input-group-text {
   resize: vertical;
   min-height: 120px;
@@ -194,7 +157,6 @@ textarea.input-group-text {
   line-height: 1.5;
 }
 
-/* Input con prefijo */
 .input-group .input-group-text {
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
@@ -210,7 +172,6 @@ textarea.input-group-text {
   border-radius: 0 12px 12px 0;
 }
 
-/* Botón principal */
 .btn.btn-primary {
   background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
   border: none;
@@ -260,13 +221,11 @@ textarea.input-group-text {
   box-shadow: 0 4px 16px rgba(74, 144, 226, 0.3);
 }
 
-/* Contenedor centrado */
 .d-flex.justify-content-center {
   position: relative;
   z-index: 2;
 }
 
-/* Animaciones de entrada */
 @keyframes slideInFromBottom {
   from {
     opacity: 0;
@@ -282,7 +241,6 @@ textarea.input-group-text {
   animation: slideInFromBottom 0.6s ease-out;
 }
 
-/* Estados de error y éxito */
 .form-control.error {
   border-color: rgba(220, 38, 38, 0.5);
   background: rgba(220, 38, 38, 0.05);
@@ -295,7 +253,6 @@ textarea.input-group-text {
   box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
 }
 
-/* Mensajes de validación */
 .validation-message {
   margin-top: 0.5rem;
   font-size: 0.875rem;
@@ -310,7 +267,6 @@ textarea.input-group-text {
   color: #22c55e;
 }
 
-/* Indicadores de carga */
 .loading-spinner {
   display: inline-block;
   width: 20px;
@@ -328,7 +284,6 @@ textarea.input-group-text {
   }
 }
 
-/* Efectos de partículas para formularios */
 .form-glass::after {
   content: '';
   position: absolute;
@@ -357,7 +312,6 @@ textarea.input-group-text {
   100% { transform: translateY(0px) translateX(0px); }
 }
 
-/* Configuración especial para formulario de ceros */
 .zero-config-form {
   padding-top: 30vh;
   min-height: 100vh;
@@ -371,7 +325,6 @@ textarea.input-group-text {
   padding: 2.5rem 2rem;
 }
 
-/* Estilos para el input de número */
 input[type="number"].form-control {
   text-align: center;
   font-size: 1.2rem;
@@ -389,7 +342,6 @@ input[type="number"].form-control {
   -moz-appearance: textfield;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   .form-glass-container {
     padding: 1rem;
@@ -450,20 +402,12 @@ input[type="number"].form-control {
   }
 }
 
-/* Estilos para modo oscuro (opcional) */
 @media (prefers-color-scheme: dark) {
   .form-glass {
     background: rgba(0, 0, 0, 0.2);
     border-color: rgba(255, 255, 255, 0.1);
   }
-  
-  .form-title {
-    background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
+
   .form-label {
     color: rgba(255, 255, 255, 0.9);
   }
@@ -488,14 +432,12 @@ input[type="number"].form-control {
   }
 }
 
-/* Mejoras de accesibilidad */
 .form-control:focus,
 .btn:focus {
   outline: 2px solid rgba(74, 144, 226, 0.5);
   outline-offset: 2px;
 }
 
-/* Transiciones suaves para todos los elementos */
 * {
   transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }

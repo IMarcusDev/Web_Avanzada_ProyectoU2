@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { blockchainService } from "../services/blockchainService";
+import apiService from "../services/api";
 import '../styles/chain.css';
 
 export function HashTable() {
@@ -19,7 +19,7 @@ export function HashTable() {
   const loadBlockchain = async () => {
     try {
       setLoading(true);
-      const response = await blockchainService.getBlockchain();
+      const response = await apiService.getBlockchain();
 
       const blockchainData = response.chain || [];
       
@@ -113,10 +113,10 @@ export function HashTable() {
       ];
       const randomText = randomTexts[Math.floor(Math.random() * randomTexts.length)];
       
-      const response = await blockchainService.createTextBlock(randomText);
+      const response = await apiService.createTextBlock(randomText);
       
       if (response.success) {
-        await loadBlockchain(); // Recargar la blockchain
+        await loadBlockchain();
       } else {
         setError('Error al agregar datos aleatorios: ' + response.error);
       }

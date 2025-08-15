@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useAuth } from "../hooks/useAuth";
-import apiService from "../services/apiService";
+import apiService from "../services/api";
 import "../styles/fileUpload.css";
 
 export function ManejarCargaArchivo() {

@@ -1,92 +1,97 @@
-import { useState, useEffect, useContext, createContext } from 'react';
-import authService from '../services/authService';
-
-const AuthContext = createContext();
+import { useState, useEffect } from 'react';
+import apiService from '../services/api';
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};
-
-export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(authService.getUser());
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        const checkAuth = async () => {
-            console.log('Checking authentication status...');
-            
-            if (authService.isAuthenticated()) {
-                console.log('Token found, validating...');
-                const isValid = await authService.validateToken();
-                setIsAuthenticated(isValid);
-                setUser(isValid ? authService.getUser() : null);
-                
-                if (!isValid) {
-                    console.log('Token validation failed, clearing auth');
-                }
-            } else {
-                console.log('No token found');
-                setIsAuthenticated(false);
-                setUser(null);
-            }
-            setLoading(false);
-        };
-
         checkAuth();
     }, []);
 
+    const checkAuth = () => {
+        const token = localStorage.getItem('token');
+        const savedUser = localStorage.getItem('user');
+
+        if (token && savedUser) {
+            try {
+                const userData = JSON.parse(savedUser);
+                setUser(userData);
+                setIsAuthenticated(true);
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                logout();
+            }
+        }
+        setLoading(false);
+    };
+
     const login = async (email, password) => {
         try {
-            console.log('AuthProvider: Attempting login...');
-            const result = await authService.login(email, password);
-            setUser(result.user);
-            setIsAuthenticated(true);
-            console.log('AuthProvider: Login successful');
-            return result;
+            const result = await apiService.login(email, password);
+            
+            if (result.success) {
+                localStorage.setItem('token', result.token);
+                localStorage.setItem('user', JSON.stringify(result.user));
+                setUser(result.user);
+                setIsAuthenticated(true);
+                return result;
+            } else {
+                throw new Error(result.error || 'Error de login');
+            }
         } catch (error) {
-            console.error('AuthProvider: Login failed:', error);
+            console.error('Login error:', error);
             throw error;
         }
     };
 
     const register = async (userData) => {
         try {
-            console.log('AuthProvider: Attempting registration...');
-            const result = await authService.register(userData);
-            console.log('AuthProvider: Registration successful');
-            return result;
+            const result = await apiService.register(userData);
+            if (result.success) {
+                return result;
+            } else {
+                throw new Error(result.error || 'Error de registro');
+            }
         } catch (error) {
-            console.error('AuthProvider: Registration failed:', error);
+            console.error('Register error:', error);
             throw error;
         }
     };
 
     const logout = () => {
-        console.log('AuthProvider: Logging out...');
-        authService.logout();
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
         setUser(null);
         setIsAuthenticated(false);
     };
 
     const refreshUser = async () => {
+        if (!isAuthenticated) return null;
+        
         try {
-            const updatedUser = await authService.refreshUser();
-            if (updatedUser) {
+            const result = await apiService.getCurrentUser();
+            if (result.success && result.user) {
+                const updatedUser = result.user;
+                localStorage.setItem('user', JSON.stringify(updatedUser));
                 setUser(updatedUser);
+                return updatedUser;
             }
-            return updatedUser;
         } catch (error) {
-            console.error('AuthProvider: Error refreshing user:', error);
-            return user;
+            console.error('Error refreshing user:', error);
         }
+        return user;
     };
 
-    const value = {
+    const getToken = () => localStorage.getItem('token');
+
+    const getAuthHeaders = () => {
+        const token = getToken();
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    };
+
+    return {
         user,
         isAuthenticated,
         loading,
@@ -94,13 +99,7 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         refreshUser,
-        getAuthHeaders: () => authService.getAuthHeaders(),
-        getToken: () => authService.getToken(),
+        getToken,
+        getAuthHeaders
     };
-
-    return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
-    );
 };

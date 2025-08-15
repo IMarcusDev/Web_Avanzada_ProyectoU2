@@ -1,69 +1,118 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import '../styles/mining.css';
-import { miningService } from '../services/miningService';
-
+import apiService from '../services/api';
 
 export const MiningPanel = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [miningContent, setMiningContent] = useState('');
     const [miningStats, setMiningStats] = useState(null);
-    const [lastMiningResult, setLastMiningResult] = useState(null);
-    const { user, refreshUser } = useAuth();
+    const [lastResult, setLastResult] = useState(null);
+    const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
+    const { user, isAuthenticated, refreshUser } = useAuth();
 
     useEffect(() => {
-        loadMiningStats();
-    }, []);
+        console.log('MiningPanel - User:', user);
+        console.log('MiningPanel - isAuthenticated:', isAuthenticated);
+        console.log('MiningPanel - Token:', localStorage.getItem('token'));
+        
+        if (isAuthenticated) {
+            loadStats();
+        } else {
+            console.log('Usuario no autenticado, no cargando estadísticas');
+            showMessage('Debes estar autenticado para ver las estadísticas', 'error');
+        }
+    }, [isAuthenticated]);
 
-    const loadMiningStats = async () => {
+    const loadStats = async () => {
         try {
-            const data = await miningService.getStats();
+            console.log('Cargando estadísticas de minado...');
+            const data = await apiService.getMiningStats();
+            console.log('Estadísticas recibidas:', data);
             setMiningStats(data);
         } catch (error) {
-            console.error('Error al cargar estadísticas de minado:', error);
+            console.error('Error al cargar estadísticas:', error);
+            showMessage('Error al cargar estadísticas: ' + error.message, 'error');
         }
     };
 
+    const showMessage = (msg, type) => {
+        setMessage(msg);
+        setMessageType(type);
+        setTimeout(() => {
+            setMessage('');
+            setMessageType('');
+        }, 5000);
+    };
 
     const startMining = async () => {
+        if (!isAuthenticated) {
+            showMessage('Debes estar autenticado para minar', 'error');
+            return;
+        }
+
         setIsLoading(true);
-        setLastMiningResult(null);
+        setLastResult(null);
 
         try {
-            const data = await miningService.startMining(
-                miningContent || `Bloque minado por ${user?.firstName} ${user?.lastName}`
-            );
+            const content = miningContent || `Bloque minado por ${user?.firstName} ${user?.lastName}`;
+            console.log('Iniciando minado con contenido:', content);
+            
+            const data = await apiService.startMining(content);
+            console.log('Resultado del minado:', data);
 
             if (data.success) {
-                setLastMiningResult(data);
+                setLastResult(data);
                 setMiningContent('');
+                showMessage('¡Bloque minado exitosamente!', 'success');
+                
+                // Actualizar usuario y estadísticas
                 await refreshUser();
-                await loadMiningStats();
+                await loadStats();
             } else {
                 throw new Error(data.error);
             }
         } catch (error) {
             console.error('Error durante el minado:', error);
-            setLastMiningResult({
-                success: false,
-                error: error.message
-            });
+            showMessage(error.message || 'Error durante el minado', 'error');
+            setLastResult({ success: false, error: error.message });
         } finally {
             setIsLoading(false);
         }
     };
 
+    // Si no está autenticado, mostrar mensaje
+    if (!isAuthenticated) {
+        return (
+            <div className="mining-container">
+                <div className="mining-header">
+                    <h1>Centro de Minado</h1>
+                    <p>Debes iniciar sesión para acceder al panel de minado</p>
+                </div>
+                <div className="message error">
+                    Por favor, inicia sesión para usar esta funcionalidad
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="mining-container">
             <div className="mining-header">
-                <h1 className="mining-title">Centro de Minado</h1>
-                <p className="mining-subtitle">
-                    Mina bloques y gana puntos por tu trabajo computacional
-                </p>
+                <h1>Centro de Minado</h1>
+                <p>Mina bloques y gana puntos por tu trabajo computacional</p>
+                <small>Usuario actual: {user?.email}</small>
             </div>
 
+            {message && (
+                <div className={`message ${messageType}`}>
+                    {message}
+                </div>
+            )}
+
             <div className="mining-panel">
+                {/* Formulario de Minado */}
                 <div className="mining-form">
                     <h3>Iniciar Minado</h3>
                     
@@ -72,7 +121,7 @@ export const MiningPanel = () => {
                         <textarea
                             value={miningContent}
                             onChange={(e) => setMiningContent(e.target.value)}
-                            placeholder="Ingresa contenido personalizado o deja vacío para contenido automático..."
+                            placeholder="Ingresa contenido personalizado o deja vacío..."
                             rows="3"
                             maxLength="500"
                             disabled={isLoading}
@@ -80,106 +129,119 @@ export const MiningPanel = () => {
                         <small>{miningContent.length}/500 caracteres</small>
                     </div>
 
-                    <div className="mining-info">
-                        <div className="info-item">
-                            <strong>Dificultad Actual:</strong> 
-                            <span className="difficulty-badge">
-                                {miningStats?.networkStats?.currentDifficulty || 'N/A'}
-                            </span>
+                    {/* Información de Minado */}
+                    {miningStats ? (
+                        <div className="mining-info">
+                            <div className="info-grid">
+                                <div className="info-item">
+                                    <strong>Dificultad:</strong> 
+                                    <span>{miningStats.networkStats?.currentDifficulty || 'N/A'}</span>
+                                </div>
+                                <div className="info-item">
+                                    <strong>Recompensa:</strong> 
+                                    <span>{miningStats.networkStats?.estimatedPointsReward || 'N/A'} puntos</span>
+                                </div>
+                                <div className="info-item">
+                                    <strong>Objetivo:</strong> 
+                                    <code>{miningStats.networkStats?.targetPrefix || '0000'}...</code>
+                                </div>
+                            </div>
                         </div>
-                        <div className="info-item">
-                            <strong>Recompensa Estimada:</strong> 
-                            <span className="reward-badge">
-                                {miningStats?.networkStats?.estimatedPointsReward || 'N/A'} puntos
-                            </span>
+                    ) : (
+                        <div className="info-loading">
+                            <p>Cargando información de red...</p>
                         </div>
-                        <div className="info-item">
-                            <strong>Objetivo:</strong> 
-                            <code className="target-hash">
-                                {miningStats?.networkStats?.targetPrefix || '0000'}...
-                            </code>
-                        </div>
-                    </div>
+                    )}
 
                     <button 
                         onClick={startMining}
-                        disabled={isLoading}
+                        disabled={isLoading || !isAuthenticated}
                         className="mining-btn"
                     >
-                        {isLoading ? (
-                            <>
-                                <div className="loading-spinner"></div>
-                                <span>Minando...</span>
-                            </>
-                        ) : (
-                            <>
-                                <i className="bi bi-play-circle"></i>
-                                <span>Iniciar Minado</span>
-                            </>
-                        )}
+                        {isLoading ? 'Minando...' : 'Iniciar Minado'}
                     </button>
                 </div>
 
-                {lastMiningResult && (
-                    <div className={`mining-result ${lastMiningResult.success ? 'success' : 'error'}`}>
-                        {lastMiningResult.success ? (
+                {/* Estadísticas del Usuario */}
+                {miningStats && miningStats.userStats && (
+                    <div className="user-stats">
+                        <h3>Tus Estadísticas</h3>
+                        <div className="stats-grid">
+                            <div className="stat-item">
+                                <span className="stat-value">
+                                    {miningStats.userStats.totalPoints || 0}
+                                </span>
+                                <span className="stat-label">Puntos Totales</span>
+                            </div>
+                            <div className="stat-item">
+                                <span className="stat-value">
+                                    {miningStats.userStats.blocksMined || 0}
+                                </span>
+                                <span className="stat-label">Bloques Minados</span>
+                            </div>
+                            <div className="stat-item">
+                                <span className="stat-value">
+                                    {miningStats.userStats.averagePointsPerBlock || 0}
+                                </span>
+                                <span className="stat-label">Promedio por Bloque</span>
+                            </div>
+                            <div className="stat-item">
+                                <span className="stat-value">
+                                    {miningStats.userStats.efficiency || 0}%
+                                </span>
+                                <span className="stat-label">Eficiencia</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Resultado del Último Minado */}
+                {lastResult && (
+                    <div className={`mining-result ${lastResult.success ? 'success' : 'error'}`}>
+                        {lastResult.success ? (
                             <div className="result-success">
-                                <div className="result-header">
-                                    <i className="bi bi-check-circle"></i>
-                                    <h4>¡Bloque Minado Exitosamente!</h4>
-                                </div>
+                                <h4>¡Bloque Minado Exitosamente!</h4>
                                 <div className="result-details">
-                                    <div className="detail-item">
-                                        <strong>Bloque #:</strong> {lastMiningResult.mining.blockIndex}
-                                    </div>
-                                    <div className="detail-item">
-                                        <strong>Hash:</strong> 
-                                        <code className="result-hash">
-                                            {lastMiningResult.mining.hash.substring(0, 16)}...
-                                        </code>
-                                        <button 
-                                            className="copy-hash-btn"
-                                            onClick={() => navigator.clipboard.writeText(lastMiningResult.mining.hash)}
-                                            title="Copiar hash completo"
-                                        >
-                                            <i className="bi bi-clipboard"></i>
-                                        </button>
-                                    </div>
-                                    <div className="detail-item">
-                                        <strong>Nonce:</strong> 
-                                        <span className="nonce-value">{lastMiningResult.mining.nonce.toLocaleString()}</span>
-                                    </div>
-                                    <div className="detail-item">
-                                        <strong>Dificultad:</strong> 
-                                        <span className="difficulty-value">{lastMiningResult.mining.difficulty}</span>
-                                    </div>
-                                    <div className="detail-item highlight">
-                                        <strong>Puntos Ganados:</strong> 
-                                        <span className="points-earned">
-                                            +{lastMiningResult.mining.pointsEarned}
-                                        </span>
-                                    </div>
+                                    <p><strong>Bloque #:</strong> {lastResult.mining?.blockIndex}</p>
+                                    <p><strong>Hash:</strong></p>
+                                    <code className="result-hash">
+                                        {lastResult.mining?.hash}
+                                    </code>
+                                    <button 
+                                        className="copy-btn"
+                                        onClick={() => navigator.clipboard.writeText(lastResult.mining?.hash)}
+                                        title="Copiar hash"
+                                    >
+                                        Copiar Hash
+                                    </button>
+                                    <p><strong>Nonce:</strong> {lastResult.mining?.nonce?.toLocaleString()}</p>
+                                    <p><strong>Puntos Ganados:</strong> +{lastResult.mining?.pointsEarned}</p>
                                 </div>
                                 
                                 <div className="user-totals">
-                                    <div className="total-item">
-                                        <span className="total-label">Total Puntos:</span>
-                                        <span className="total-value">{lastMiningResult.user.totalPoints}</span>
-                                    </div>
-                                    <div className="total-item">
-                                        <span className="total-label">Bloques Minados:</span>
-                                        <span className="total-value">{lastMiningResult.user.blocksMined}</span>
-                                    </div>
+                                    <p>Total Puntos: {lastResult.user?.totalPoints}</p>
+                                    <p>Bloques Minados: {lastResult.user?.blocksMined}</p>
                                 </div>
                             </div>
                         ) : (
                             <div className="result-error">
-                                <i className="bi bi-x-circle"></i>
-                                <p>Error: {lastMiningResult.error}</p>
+                                <h4>Error en el Minado</h4>
+                                <p>{lastResult.error}</p>
                             </div>
                         )}
                     </div>
                 )}
+
+                {/* Debug Info (puedes eliminar esto después) */}
+                <details style={{ marginTop: '2rem', fontSize: '0.8rem' }}>
+                    <summary>Debug Info</summary>
+                    <pre>{JSON.stringify({ 
+                        isAuthenticated, 
+                        hasToken: !!localStorage.getItem('token'),
+                        user: user ? { email: user.email, id: user.id } : null,
+                        miningStats 
+                    }, null, 2)}</pre>
+                </details>
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
-import apiService from "../services/apiService";
+import apiService from "../services/api";
 
 export function ManejarRellenoCeros() {
     const [ceros, setCeros] = useState('');

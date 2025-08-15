@@ -1,6 +1,5 @@
-// src/views/PointsList.jsx
 import React, { useState, useEffect } from "react";
-import { userService } from "../services/userService";
+import apiService from "../services/api";
 import "../styles/points.css";
 
 export const PointsList = () => {
@@ -21,7 +20,7 @@ export const PointsList = () => {
     const loadUsersWithPoints = async () => {
         try {
             setLoading(true);
-            const users = await userService.getUsersWithPoints();
+            const users = await apiService.getUsersWithPoints();
             setPersonas(users);
             setFilteredPersonas(users);
             setError('');
@@ -77,9 +76,9 @@ export const PointsList = () => {
 
     const generateRandomData = async () => {
         try {
-            const response = await userService.generateRandomUsers(5);
+            const response = await apiService.generateRandomUsers(5);
             if (response.success) {
-                await loadUsersWithPoints(); // Recargar la lista
+                await loadUsersWithPoints();
             } else {
                 setError(response.error || 'Error al generar usuarios');
             }
@@ -109,7 +108,7 @@ export const PointsList = () => {
     const clearAllData = async () => {
         if (window.confirm('¿Estás seguro de que quieres eliminar todos los datos?')) {
             try {
-                const response = await userService.clearAllUsers();
+                const response = await apiService.clearAllUsers();
                 if (response.success) {
                     await loadUsersWithPoints();
                 } else {
@@ -124,7 +123,7 @@ export const PointsList = () => {
 
     const getStats = async () => {
         try {
-            const statsData = await userService.getUserStats();
+            const statsData = await apiService.getUserStats();
             return {
                 avg: statsData.averagePoints || 0,
                 max: statsData.maxPoints || 0,

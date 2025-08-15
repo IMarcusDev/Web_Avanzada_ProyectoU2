@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Blocks } from '../components/blocks';
-import { blockchainService } from '../services/blockchainService';
+import apiService from "../services/api";
 import '../styles/auditoria.css';
 
 export const Auditoria = () => {
@@ -20,7 +19,7 @@ export const Auditoria = () => {
 
     const loadStats = async () => {
         try {
-            const statsData = await blockchainService.getStats();
+            const statsData = await apiService.getStats();
             setStats(statsData);
         } catch (error) {
             console.error('Error loading stats:', error);
@@ -30,7 +29,7 @@ export const Auditoria = () => {
     const loadBlockchain = async () => {
         try {
             setLoading(true);
-            const response = await blockchainService.getBlockchain();
+            const response = await apiService.getBlockchain();
             const transformedChain = response.chain.map(block => ({
                 index: block.index,
                 data: block.data || 'Sin datos',
@@ -75,8 +74,8 @@ export const Auditoria = () => {
                 }]);
             }
 
-            const validationResult = await blockchainService.validateChain();
-            const integrityResult = await blockchainService.getChainIntegrity();
+            const validationResult = await apiService.validateChain();
+            const integrityResult = await apiService.getChainIntegrity();
 
             setValidationProgress(100);
             setValidationDetails(prev => [...prev, {
@@ -134,7 +133,7 @@ export const Auditoria = () => {
     const generateNewBlock = async () => {
         try {
             const randomData = `Bloque de prueba ${Date.now()}`;
-            const response = await blockchainService.createTextBlock(randomData);
+            const response = await apiService.createTextBlock(randomData);
             
             if (response.success) {
                 await loadBlockchain();

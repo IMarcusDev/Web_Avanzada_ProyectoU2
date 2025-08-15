@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./hooks/useAuth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Login } from "./views/Login";
 import { HashTable } from "./components/tableHash";
@@ -15,7 +14,6 @@ import { MiningPanel } from "./views/MiningPanel";
 
 export const App = () => {
     return (
-        <AuthProvider>
             <BrowserRouter>
                 <Routes>
                     <Route path='/' element={<Login />} />
@@ -36,6 +34,5 @@ export const App = () => {
                     </Route>
                 </Routes>
             </BrowserRouter>
-        </AuthProvider>
     )
 }

@@ -19,6 +19,10 @@ export const HomeView = () => {
                             <Link to="chain"><i className="bi bi-link-45deg"></i> Listado Cadenas</Link>
                         </li>
                         <li className="display-2">
+                            <Link to="MiningPanel"><i className="bi bi-link-45deg"></i> Minado de puntos</Link>
+                        </li>
+
+                        <li className="display-2">
                             <Link to="AuditoriaPage"><i className="bi bi-journal-check"></i> Auditoria de la cadena</Link>
                         </li>
                         <li className="display-2">

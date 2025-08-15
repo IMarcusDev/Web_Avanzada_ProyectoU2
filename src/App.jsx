@@ -11,6 +11,7 @@ import { Auditoria } from "./views/Auditoria";
 import { Documentation } from "./views/Documentation";
 import { PetSoftware } from "./views/petSoftware";
 import { PointsList } from "./views/PointsList";
+import { MiningPanel } from "./views/MiningPanel";
 
 export const App = () => {
     return (
@@ -31,6 +32,7 @@ export const App = () => {
                         <Route path="pointList" element={<PointsList></PointsList>}/>
                         <Route path="AuditoriaPage" element={<Auditoria/>}/>
                         <Route path="DocumentationPage" element={<Documentation/>}/>
+                        <Route path="MiningPanel" element={<MiningPanel/>}/>
                     </Route>
                 </Routes>
             </BrowserRouter>

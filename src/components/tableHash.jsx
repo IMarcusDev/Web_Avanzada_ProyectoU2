@@ -1,4 +1,3 @@
-// src/components/tableHash.jsx
 import { useState, useEffect } from "react";
 import { blockchainService } from "../services/blockchainService";
 import '../styles/chain.css';
@@ -21,8 +20,7 @@ export function HashTable() {
     try {
       setLoading(true);
       const response = await blockchainService.getBlockchain();
-      
-      // Los datos ya vienen en el formato correcto desde tu API
+
       const blockchainData = response.chain || [];
       
       setData(blockchainData);
@@ -31,8 +29,7 @@ export function HashTable() {
     } catch (error) {
       console.error('Error loading blockchain:', error);
       setError('Error al cargar la blockchain. Verifique que el servidor esté funcionando.');
-      
-      // Fallback a datos locales si existen
+
       const localData = JSON.parse(localStorage.getItem('data'))?.rows || [];
       if (localData.length > 0) {
         setData(localData);

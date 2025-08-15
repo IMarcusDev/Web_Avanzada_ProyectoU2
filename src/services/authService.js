@@ -105,10 +105,15 @@ class AuthService {
             console.log('Validating token...');
             
             const response = await fetch(`${API_BASE_URL}/auth/me`, {
-                headers: this.getAuthHeaders(),
+                headers: {
+                    'Authorization': `Bearer ${this.token}`,
+                    'Content-Type': 'application/json',
+                },
                 credentials: 'include',
             });
 
+            console.log('Token validation response status:', response.status);
+            
             if (response.ok) {
                 const data = await response.json();
                 const isValid = data.success;
@@ -122,7 +127,9 @@ class AuthService {
                 return isValid;
             } else {
                 console.log('Token validation failed with status:', response.status);
-                this.logout();
+                if (response.status === 401) {
+                    this.logout();
+                }
                 return false;
             }
         } catch (error) {

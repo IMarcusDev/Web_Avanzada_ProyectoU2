@@ -66,8 +66,7 @@ export const MiningPanel = () => {
                 setLastResult(data);
                 setMiningContent('');
                 showMessage('¡Bloque minado exitosamente!', 'success');
-                
-                // Actualizar usuario y estadísticas
+
                 await refreshUser();
                 await loadStats();
             } else {
@@ -82,7 +81,6 @@ export const MiningPanel = () => {
         }
     };
 
-    // Si no está autenticado, mostrar mensaje
     if (!isAuthenticated) {
         return (
             <div className="mining-container">
@@ -112,7 +110,6 @@ export const MiningPanel = () => {
             )}
 
             <div className="mining-panel">
-                {/* Formulario de Minado */}
                 <div className="mining-form">
                     <h3>Iniciar Minado</h3>
                     
@@ -129,7 +126,6 @@ export const MiningPanel = () => {
                         <small>{miningContent.length}/500 caracteres</small>
                     </div>
 
-                    {/* Información de Minado */}
                     {miningStats ? (
                         <div className="mining-info">
                             <div className="info-grid">
@@ -162,7 +158,6 @@ export const MiningPanel = () => {
                     </button>
                 </div>
 
-                {/* Estadísticas del Usuario */}
                 {miningStats && miningStats.userStats && (
                     <div className="user-stats">
                         <h3>Tus Estadísticas</h3>
@@ -195,7 +190,6 @@ export const MiningPanel = () => {
                     </div>
                 )}
 
-                {/* Resultado del Último Minado */}
                 {lastResult && (
                     <div className={`mining-result ${lastResult.success ? 'success' : 'error'}`}>
                         {lastResult.success ? (
@@ -232,7 +226,6 @@ export const MiningPanel = () => {
                     </div>
                 )}
 
-                {/* Debug Info (puedes eliminar esto después) */}
                 <details style={{ marginTop: '2rem', fontSize: '0.8rem' }}>
                     <summary>Debug Info</summary>
                     <pre>{JSON.stringify({ 

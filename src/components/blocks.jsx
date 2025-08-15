@@ -49,8 +49,7 @@ export function Blocks({ initialChain }) {
                 
                 return (
                     <div key={index} className={`block-card ${statusInfo.className} ${isExpanded ? 'expanded' : ''}`}>
-                        
-                        {/* Encabezado del Bloque */}
+
                         <div className="block-header" onClick={() => toggleExpand(index)}>
                             <div className="block-title">
                                 <span className="block-icon">{statusInfo.icon}</span>
@@ -63,8 +62,6 @@ export function Blocks({ initialChain }) {
                                 {isExpanded ? '▲' : '▼'}
                             </button>
                         </div>
-
-                        {/* Vista Previa */}
                         <div className="block-preview">
                             <div className="preview-item">
                                 <label>Hash:</label>
@@ -91,7 +88,6 @@ export function Blocks({ initialChain }) {
                             )}
                         </div>
 
-                        {/* Detalles Expandidos */}
                         {isExpanded && (
                             <div className="block-details">
                                 <div className="details-section">
@@ -149,7 +145,6 @@ export function Blocks({ initialChain }) {
                                     </div>
                                 </div>
 
-                                {/* Información de Validación */}
                                 <div className="validation-info">
                                     <h4>Estado de Validación</h4>
                                     <div className={`validation-status ${statusInfo.className}`}>
@@ -160,7 +155,6 @@ export function Blocks({ initialChain }) {
                             </div>
                         )}
 
-                        {/* Conexión al Siguiente Bloque */}
                         {index < initialChain.length - 1 && (
                             <div className="block-connector">
                                 <div className="connector-line"></div>

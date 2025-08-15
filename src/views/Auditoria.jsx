@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import apiService from "../services/api";
+import { Blocks } from "../components/blocks";
 import '../styles/auditoria.css';
 
 export const Auditoria = () => {
@@ -19,7 +20,7 @@ export const Auditoria = () => {
 
     const loadStats = async () => {
         try {
-            const statsData = await apiService.getStats();
+            const statsData = await apiService.getBlockchainStats();
             setStats(statsData);
         } catch (error) {
             console.error('Error loading stats:', error);
@@ -30,7 +31,10 @@ export const Auditoria = () => {
         try {
             setLoading(true);
             const response = await apiService.getBlockchain();
-            const transformedChain = response.chain.map(block => ({
+
+            const chainArray = response.chain || response || [];
+            
+            const transformedChain = chainArray.map(block => ({
                 index: block.index,
                 data: block.data || 'Sin datos',
                 previousHash: block.previousHash,
@@ -74,7 +78,7 @@ export const Auditoria = () => {
                 }]);
             }
 
-            const validationResult = await apiService.validateChain();
+            const validationResult = await apiService.validateBlockchain();
             const integrityResult = await apiService.getChainIntegrity();
 
             setValidationProgress(100);

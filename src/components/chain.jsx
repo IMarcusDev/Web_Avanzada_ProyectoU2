@@ -1,6 +1,3 @@
-// Listado de Cadenas:
-// String + (Time + seed) = hash
-// El hash anterior se convierte en seed
 import CryptoJS from "crypto-js";
 
 const first_seed = 'ESPE';
@@ -10,7 +7,6 @@ function generateHash(chain, seed, time) {
   return CryptoJS.SHA256(data).toString(CryptoJS.enc.Hex);
 }
 
-// Hash Component: table row
 export function Hash({ idx, chain, time, previousHash = first_seed }) {
   const currentSeed = previousHash || first_seed;
   const hash = generateHash(chain, currentSeed, time);

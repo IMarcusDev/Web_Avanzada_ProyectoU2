@@ -14,13 +14,20 @@ export function ManejarCargaArchivo() {
     const fileInputRef = useRef(null);
     const { isAuthenticated } = useAuth();
 
-    const showMessage = (msg, type) => {
+    const showMessage = (msg, type, pointsInfo = null) => {
         setMessage(msg);
         setMessageType(type);
+        if (pointsInfo && type === 'success') {
+            const pointsDetail = `¡Has ganado ${pointsInfo.total} punto(s)! ` +
+                `${pointsInfo.filePoints > 0 ? `Archivo: ${pointsInfo.filePoints}pt ` : ''}` +
+                `${pointsInfo.commentPoints > 0 ? `Texto: ${pointsInfo.commentPoints}pt` : ''}`;
+            setMessage(msg + ' ' + pointsDetail);
+        }
+        
         setTimeout(() => {
             setMessage('');
             setMessageType('');
-        }, 5000);
+        }, 7000);
     };
 
     const onSubmit = async (event) => {
@@ -43,11 +50,18 @@ export function ManejarCargaArchivo() {
             let result;
             
             if (archivo) {
-                // Subir archivo
                 result = await apiService.uploadFile(archivo, texto);
-                showMessage(`Archivo ${archivo.name} procesado exitosamente como bloque #${result.blockIndex}`, 'success');
+                
+                if (result.success && result.pointsEarned) {
+                    showMessage(
+                        `Archivo ${archivo.name} procesado exitosamente como bloque #${result.blockIndex}`, 
+                        'success', 
+                        result.pointsBreakdown
+                    );
+                } else {
+                    showMessage(`Archivo ${archivo.name} procesado exitosamente como bloque #${result.blockIndex}`, 'success');
+                }
             } else if (texto.trim()) {
-                // Crear bloque de texto
                 result = await apiService.createTextBlock(texto);
                 showMessage(`Texto procesado exitosamente como bloque #${result.blockIndex}`, 'success');
             }
@@ -58,6 +72,10 @@ export function ManejarCargaArchivo() {
                 fileInputRef.current.value = '';
             }
 
+            if (result.userStats) {
+                console.log('Estadísticas actualizadas:', result.userStats);
+            }
+
         } catch (error) {
             console.error('Error:', error);
             showMessage(error.message || 'Error al procesar la solicitud', 'error');
@@ -65,6 +83,37 @@ export function ManejarCargaArchivo() {
             setIsLoading(false);
             setUploadProgress(0);
         }
+    };
+
+    const renderPointsInfo = () => {
+        const hasFile = archivo !== null;
+        const hasText = texto.trim().length > 0;
+        const totalPoints = (hasFile ? 1 : 0) + (hasText ? 1 : 0);
+
+        if (totalPoints === 0) return null;
+
+        return (
+            <div className="points-preview">
+                <div className="points-header">
+                    <i className="bi bi-gem"></i>
+                    <span>Puntos a ganar: {totalPoints}</span>
+                </div>
+                <div className="points-breakdown">
+                    {hasFile && (
+                        <div className="point-item">
+                            <i className="bi bi-file-earmark"></i>
+                            <span>Archivo: 1 punto</span>
+                        </div>
+                    )}
+                    {hasText && (
+                        <div className="point-item">
+                            <i className="bi bi-chat-text"></i>
+                            <span>Texto: 1 punto</span>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
     };
 
     const handleFileChange = (event) => {
@@ -286,6 +335,7 @@ export function ManejarCargaArchivo() {
                                 </>
                             ) : (
                                 <>
+                                    {renderPointsInfo()}
                                     <i className="bi bi-send"></i>
                                     Enviar a Blockchain
                                 </>

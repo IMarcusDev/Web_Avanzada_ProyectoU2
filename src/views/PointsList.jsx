@@ -128,13 +128,12 @@ export const PointsList = () => {
             return {
                 avg: statsData.averagePoints || 0,
                 max: statsData.maxPoints || 0,
-                min: 0, // La API no devuelve min, lo calculamos localmente
+                min: 0,
                 total: statsData.totalPoints || 0,
                 count: statsData.totalUsers || 0
             };
         } catch (error) {
             console.error('Error getting stats:', error);
-            // Fallback a cálculo local
             if (filteredPersonas.length === 0) return { avg: 0, max: 0, min: 0, total: 0, count: 0 };
             
             const points = filteredPersonas.map(p => p.point || 0);
@@ -374,7 +373,6 @@ export const PointsList = () => {
                                         className="action-btn edit-btn"
                                         title="Editar"
                                         onClick={() => {
-                                            // Aquí puedes implementar la funcionalidad de editar
                                             console.log('Editar usuario:', persona.id);
                                         }}
                                     >

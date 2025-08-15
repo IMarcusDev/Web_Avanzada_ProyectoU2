@@ -1,4 +1,3 @@
-// src/views/Auditoria.jsx
 import React, { useState, useEffect } from 'react';
 import { Blocks } from '../components/blocks';
 import { blockchainService } from '../services/blockchainService';
@@ -32,8 +31,6 @@ export const Auditoria = () => {
         try {
             setLoading(true);
             const response = await blockchainService.getBlockchain();
-            
-            // Transformar datos para el componente Blocks
             const transformedChain = response.chain.map(block => ({
                 index: block.index,
                 data: block.data || 'Sin datos',
@@ -68,7 +65,6 @@ export const Auditoria = () => {
         ];
 
         try {
-            // Simular progreso paso a paso
             for (let i = 0; i < validationSteps.length - 1; i++) {
                 await new Promise(resolve => setTimeout(resolve, 800));
                 setValidationProgress((i + 1) * 16.67);
@@ -79,7 +75,6 @@ export const Auditoria = () => {
                 }]);
             }
 
-            // Llamar a la API para validar
             const validationResult = await blockchainService.validateChain();
             const integrityResult = await blockchainService.getChainIntegrity();
 
@@ -96,8 +91,7 @@ export const Auditoria = () => {
             } else {
                 setValidationStatus('error');
                 setMensajeValidado(validationResult.message || 'Se encontraron inconsistencias en la cadena');
-                
-                // Agregar detalles de errores
+
                 if (validationResult.details) {
                     const errors = validationResult.details.filter(detail => detail.status !== 'Valid');
                     errors.forEach((error, index) => {
@@ -110,7 +104,6 @@ export const Auditoria = () => {
                 }
             }
 
-            // Actualizar estadísticas
             setStats(prev => ({
                 ...prev,
                 chainIntegrity: integrityResult.integrityPercentage || 0

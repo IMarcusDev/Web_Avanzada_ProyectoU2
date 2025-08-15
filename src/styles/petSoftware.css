@@ -15,7 +15,7 @@
 .hero-section {
     padding: 4rem 2rem;
     background: var(--primary-gradient);
-    color: white;
+    color: rgb(0, 0, 0);
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -130,7 +130,7 @@
     font-weight: 800;
     margin-bottom: 1rem;
     line-height: 1.1;
-    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    background: #1a1a1a;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -141,6 +141,7 @@
     margin-bottom: 2rem;
     opacity: 0.9;
     font-weight: 500;
+    color: #1a1a1a;
 }
 
 .hero-badge {
@@ -155,6 +156,10 @@
     padding: 0.75rem 1.5rem;
     font-weight: 600;
     font-size: 0.9rem;
+}
+
+.hero-badge span{
+    color: #1a1a1a;
 }
 
 .stats-section {
@@ -200,8 +205,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
     font-size: 1.5rem;
+}
+
+.stat-icon i{
+    color: #1a1a1a;
 }
 
 .stat-content {
@@ -278,8 +286,8 @@
 }
 
 .nav-tab.active {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
+    background: var(--primary-gradient);
+    color: rgb(0, 0, 0);
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 

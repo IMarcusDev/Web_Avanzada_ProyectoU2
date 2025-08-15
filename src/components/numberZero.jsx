@@ -177,15 +177,6 @@ export function ManejarRellenoCeros() {
                         Resetear
                     </button>
                 </div>
-
-                <div className="difficulty-info">
-                    <h5>Información sobre la Dificultad</h5>
-                    <ul>
-                        <li><strong>Dificultad baja (1-3):</strong> Rápido de minar, menos seguro</li>
-                        <li><strong>Dificultad media (4-6):</strong> Balance entre velocidad y seguridad</li>
-                        <li><strong>Dificultad alta (7-10):</strong> Lento de minar, muy seguro</li>
-                    </ul>
-                </div>
             </form>
         </div>
     )

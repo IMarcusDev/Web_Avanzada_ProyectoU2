@@ -33,11 +33,11 @@ export const Welcome = () => {
                 <span className="stat-label">Integrantes</span>
               </div>
               <div className="stat-item">
-                <span className="stat-number">2024</span>
+                <span className="stat-number">2025</span>
                 <span className="stat-label">Año</span>
               </div>
               <div className="stat-item">
-                <span className="stat-number">U2</span>
+                <span className="stat-number">U3</span>
                 <span className="stat-label">Proyecto</span>
               </div>
             </div>

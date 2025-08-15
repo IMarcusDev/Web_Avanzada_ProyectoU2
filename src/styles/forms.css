@@ -313,7 +313,6 @@ textarea.input-group-text {
 }
 
 .zero-config-form {
-  padding-top: 30vh;
   min-height: 100vh;
   display: flex;
   align-items: flex-start;
@@ -409,7 +408,7 @@ input[type="number"].form-control {
   }
 
   .form-label {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(87, 86, 86, 0.9);
   }
   
   .form-control,
@@ -418,7 +417,7 @@ input[type="number"].form-control {
   textarea.input-group-text {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(0, 0, 0, 0.9);
   }
   
   .form-control::placeholder,
@@ -451,7 +450,7 @@ input[type="number"].form-control {
 }
 
 .config-info h4 {
-    color: white;
+    color: rgb(0, 0, 0);
     margin-bottom: 1rem;
     text-align: center;
 }
@@ -472,13 +471,13 @@ input[type="number"].form-control {
 }
 
 .config-label {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(105, 104, 104, 0.7);
     font-size: 0.85rem;
     margin-bottom: 0.5rem;
 }
 
 .config-value {
-    color: white;
+    color: rgb(0, 0, 0);
     font-weight: 600;
     font-size: 1.1rem;
 }
@@ -510,7 +509,7 @@ input[type="number"].form-control {
 }
 
 .difficulty-info h5 {
-    color: white;
+    color: rgb(0, 0, 0);
     margin-bottom: 1rem;
     text-align: center;
 }

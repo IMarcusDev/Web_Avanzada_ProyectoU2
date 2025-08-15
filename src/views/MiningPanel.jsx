@@ -63,38 +63,6 @@ export const MiningPanel = () => {
                 </p>
             </div>
 
-            <div className="user-stats-panel">
-                <div className="stat-card">
-                    <div className="stat-icon">
-                        <i className="bi bi-gem"></i>
-                    </div>
-                    <div className="stat-info">
-                        <span className="stat-number">{user?.totalPoints || 0}</span>
-                        <span className="stat-label">Puntos Totales</span>
-                    </div>
-                </div>
-                <div className="stat-card">
-                    <div className="stat-icon">
-                        <i className="bi bi-cpu"></i>
-                    </div>
-                    <div className="stat-info">
-                        <span className="stat-number">{user?.blocksMined || 0}</span>
-                        <span className="stat-label">Bloques Minados</span>
-                    </div>
-                </div>
-                <div className="stat-card">
-                    <div className="stat-icon">
-                        <i className="bi bi-graph-up"></i>
-                    </div>
-                    <div className="stat-info">
-                        <span className="stat-number">
-                            {miningStats?.userStats?.averagePointsPerBlock || 0}
-                        </span>
-                        <span className="stat-label">Promedio/Bloque</span>
-                    </div>
-                </div>
-            </div>
-
             <div className="mining-panel">
                 <div className="mining-form">
                     <h3>Iniciar Minado</h3>

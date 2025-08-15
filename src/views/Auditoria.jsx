@@ -1,45 +1,57 @@
-import React, { useState } from 'react';
+// src/views/Auditoria.jsx
+import React, { useState, useEffect } from 'react';
 import { Blocks } from '../components/blocks';
+import { blockchainService } from '../services/blockchainService';
 import '../styles/auditoria.css';
-
-const initialChain = [
-    {
-        index: 0,
-        data: 'Bloque génesis',
-        previousHash: '0',
-        nonce: 512,
-        hash: '0000a1b2c3d4e5f6g7h8i9j0',
-        timestamp: Date.now() - 86400000,
-        isValid: true
-    },
-    {
-        index: 1,
-        data: 'Transacción 1',
-        previousHash: '0000a1b2c3d4e5f6g7h8i9j0',
-        nonce: 123,
-        hash: '0000b2c3d4e5f6g7h8i9j0a1',
-        timestamp: Date.now() - 43200000,
-        isValid: true
-    },
-    {
-        index: 2,
-        data: 'Transacción 2',
-        previousHash: '0000b2c3d4e5f6g7h8i9j0a1',
-        nonce: 456,
-        hash: '0000c3d4e5f6g7h8i9j0a1b2',
-        timestamp: Date.now(),
-        isValid: true
-    }
-];
 
 export const Auditoria = () => {
     const [mostrarCadena, setMostrarCadena] = useState(false);
     const [mensajeValidado, setMensajeValidado] = useState('');
     const [validationStatus, setValidationStatus] = useState('pending');
-    const [chainData, setChainData] = useState(initialChain);
+    const [chainData, setChainData] = useState([]);
     const [validationProgress, setValidationProgress] = useState(0);
     const [validationDetails, setValidationDetails] = useState([]);
     const [showDetails, setShowDetails] = useState(false);
+    const [stats, setStats] = useState({});
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        loadStats();
+    }, []);
+
+    const loadStats = async () => {
+        try {
+            const statsData = await blockchainService.getStats();
+            setStats(statsData);
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
+    };
+
+    const loadBlockchain = async () => {
+        try {
+            setLoading(true);
+            const response = await blockchainService.getBlockchain();
+            
+            // Transformar datos para el componente Blocks
+            const transformedChain = response.chain.map(block => ({
+                index: block.index,
+                data: block.data || 'Sin datos',
+                previousHash: block.previousHash,
+                hash: block.hash,
+                nonce: block.nonce || 0,
+                timestamp: block.timestamp,
+                isValid: block.isValid
+            }));
+            
+            setChainData(transformedChain);
+        } catch (error) {
+            console.error('Error loading blockchain:', error);
+            setChainData([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const simulateValidation = async () => {
         setValidationStatus('validating');
@@ -51,35 +63,74 @@ export const Auditoria = () => {
             'Validando hashes...',
             'Comprobando enlaces entre bloques...',
             'Verificando timestamps...',
+            'Calculando integridad...',
             'Validación completada'
         ];
 
-        for (let i = 0; i < validationSteps.length; i++) {
-            await new Promise(resolve => setTimeout(resolve, 800));
-            setValidationProgress((i + 1) * 20);
-            setValidationDetails(prev => [...prev, {
-                step: i + 1,
-                message: validationSteps[i],
-                status: i < validationSteps.length - 1 ? 'completed' : 'final'
-            }]);
-        }
+        try {
+            // Simular progreso paso a paso
+            for (let i = 0; i < validationSteps.length - 1; i++) {
+                await new Promise(resolve => setTimeout(resolve, 800));
+                setValidationProgress((i + 1) * 16.67);
+                setValidationDetails(prev => [...prev, {
+                    step: i + 1,
+                    message: validationSteps[i],
+                    status: 'completed'
+                }]);
+            }
 
-        const hasError = Math.random() < 0.2;
-        if (hasError) {
-            setValidationStatus('error');
-            setMensajeValidado('Se encontraron inconsistencias en la cadena');
+            // Llamar a la API para validar
+            const validationResult = await blockchainService.validateChain();
+            const integrityResult = await blockchainService.getChainIntegrity();
+
+            setValidationProgress(100);
             setValidationDetails(prev => [...prev, {
-                step: 6,
-                message: 'Error: Hash inconsistente en el bloque #2',
+                step: validationSteps.length,
+                message: validationSteps[validationSteps.length - 1],
+                status: 'final'
+            }]);
+
+            if (validationResult.isValid) {
+                setValidationStatus('success');
+                setMensajeValidado(validationResult.message || 'Cadena validada correctamente - Integridad verificada');
+            } else {
+                setValidationStatus('error');
+                setMensajeValidado(validationResult.message || 'Se encontraron inconsistencias en la cadena');
+                
+                // Agregar detalles de errores
+                if (validationResult.details) {
+                    const errors = validationResult.details.filter(detail => detail.status !== 'Valid');
+                    errors.forEach((error, index) => {
+                        setValidationDetails(prev => [...prev, {
+                            step: validationSteps.length + index + 1,
+                            message: `Error en bloque ${error.blockIndex}: ${error.message}`,
+                            status: 'error'
+                        }]);
+                    });
+                }
+            }
+
+            // Actualizar estadísticas
+            setStats(prev => ({
+                ...prev,
+                chainIntegrity: integrityResult.integrityPercentage || 0
+            }));
+
+        } catch (error) {
+            setValidationStatus('error');
+            setMensajeValidado('Error al validar la cadena: ' + error.message);
+            setValidationDetails(prev => [...prev, {
+                step: validationSteps.length,
+                message: 'Error de conexión con el servidor',
                 status: 'error'
             }]);
-        } else {
-            setValidationStatus('success');
-            setMensajeValidado('Cadena validada correctamente - Integridad verificada');
         }
     };
 
-    const handleMostrarCadena = () => {
+    const handleMostrarCadena = async () => {
+        if (!mostrarCadena) {
+            await loadBlockchain();
+        }
         setMostrarCadena(!mostrarCadena);
         setMensajeValidado('');
         setValidationStatus('pending');
@@ -87,34 +138,30 @@ export const Auditoria = () => {
         setValidationDetails([]);
     };
 
-    const generateNewBlock = () => {
-        const newIndex = chainData.length;
-        const lastBlock = chainData[chainData.length - 1];
-        const newBlock = {
-            index: newIndex,
-            data: `Transacción ${newIndex}`,
-            previousHash: lastBlock.hash,
-            nonce: Math.floor(Math.random() * 1000),
-            hash: `0000${Math.random().toString(36).substring(2, 15)}`,
-            timestamp: Date.now(),
-            isValid: true
-        };
-        
-        setChainData([...chainData, newBlock]);
+    const generateNewBlock = async () => {
+        try {
+            const randomData = `Bloque de prueba ${Date.now()}`;
+            const response = await blockchainService.createTextBlock(randomData);
+            
+            if (response.success) {
+                await loadBlockchain();
+                await loadStats();
+            }
+        } catch (error) {
+            console.error('Error generating new block:', error);
+        }
     };
 
     const getChainStats = () => {
         return {
-            totalBlocks: chainData.length,
-            totalTransactions: chainData.length - 1,
-            averageBlockTime: chainData.length > 1 
-                ? Math.round((chainData[chainData.length - 1].timestamp - chainData[0].timestamp) / (chainData.length - 1) / 1000)
-                : 0,
-            chainIntegrity: validationStatus === 'success' ? 100 : validationStatus === 'error' ? 85 : 'N/A'
+            totalBlocks: stats.totalBlocks || chainData.length,
+            totalTransactions: Math.max(0, (stats.totalBlocks || chainData.length) - 1),
+            averageBlockTime: stats.averageBlockTime ? `${stats.averageBlockTime.toFixed(1)}s` : 'N/A',
+            chainIntegrity: stats.chainIntegrity || (validationStatus === 'success' ? 100 : validationStatus === 'error' ? 85 : 'N/A')
         };
     };
 
-    const stats = getChainStats();
+    const displayStats = getChainStats();
 
     return (
         <div className="auditoria-container">
@@ -131,7 +178,7 @@ export const Auditoria = () => {
                         <i className="bi bi-link-45deg"></i>
                     </div>
                     <div className="stat-info">
-                        <span className="stat-number">{stats.totalBlocks}</span>
+                        <span className="stat-number">{displayStats.totalBlocks}</span>
                         <span className="stat-label">Bloques Totales</span>
                     </div>
                 </div>
@@ -140,7 +187,7 @@ export const Auditoria = () => {
                         <i className="bi bi-arrow-left-right"></i>
                     </div>
                     <div className="stat-info">
-                        <span className="stat-number">{stats.totalTransactions}</span>
+                        <span className="stat-number">{displayStats.totalTransactions}</span>
                         <span className="stat-label">Transacciones</span>
                     </div>
                 </div>
@@ -149,7 +196,7 @@ export const Auditoria = () => {
                         <i className="bi bi-stopwatch"></i>
                     </div>
                     <div className="stat-info">
-                        <span className="stat-number">{stats.averageBlockTime}s</span>
+                        <span className="stat-number">{displayStats.averageBlockTime}</span>
                         <span className="stat-label">Tiempo Promedio</span>
                     </div>
                 </div>
@@ -158,7 +205,7 @@ export const Auditoria = () => {
                         <i className="bi bi-shield-check"></i>
                     </div>
                     <div className="stat-info">
-                        <span className="stat-number">{stats.chainIntegrity}%</span>
+                        <span className="stat-number">{displayStats.chainIntegrity}%</span>
                         <span className="stat-label">Integridad</span>
                     </div>
                 </div>
@@ -169,9 +216,10 @@ export const Auditoria = () => {
                     <button
                         onClick={handleMostrarCadena}
                         className={`btn btn-primary ${mostrarCadena ? 'active' : ''}`}
+                        disabled={loading}
                     >
-                        <i className={`bi ${mostrarCadena ? 'bi-eye-slash' : 'bi-eye'}`}></i>
-                        {mostrarCadena ? 'Ocultar cadena' : 'Ver cadena'}
+                        <i className={`bi ${loading ? 'bi-arrow-clockwise spin' : mostrarCadena ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+                        {loading ? 'Cargando...' : mostrarCadena ? 'Ocultar cadena' : 'Ver cadena'}
                     </button>
                     
                     {mostrarCadena && (
@@ -192,6 +240,14 @@ export const Auditoria = () => {
                         <i className="bi bi-plus-circle"></i>
                         Nuevo Bloque
                     </button>
+
+                    <button
+                        onClick={loadStats}
+                        className="btn btn-info"
+                    >
+                        <i className="bi bi-arrow-clockwise"></i>
+                        Actualizar Stats
+                    </button>
                 </div>
                 
                 {validationDetails.length > 0 && (
@@ -209,7 +265,7 @@ export const Auditoria = () => {
                 <div className="validation-progress">
                     <div className="progress-header">
                         <span>Validando integridad de la cadena...</span>
-                        <span>{validationProgress}%</span>
+                        <span>{Math.round(validationProgress)}%</span>
                     </div>
                     <div className="progress-bar">
                         <div 
@@ -268,14 +324,25 @@ export const Auditoria = () => {
                                 <i className="bi bi-layers"></i>
                                 {chainData.length} bloques
                             </span>
-                            <span className="info-item">
-                                <i className="bi bi-clock-history"></i>
-                                Último: {new Date(chainData[chainData.length - 1]?.timestamp).toLocaleString()}
-                            </span>
+                            {chainData.length > 0 && (
+                                <span className="info-item">
+                                    <i className="bi bi-clock-history"></i>
+                                    Último: {new Date(chainData[chainData.length - 1]?.timestamp).toLocaleString()}
+                                </span>
+                            )}
                         </div>
                     </div>
                     <div className="blocks-grid">
-                        <Blocks initialChain={chainData} />
+                        {chainData.length > 0 ? (
+                            <Blocks initialChain={chainData} />
+                        ) : (
+                            <div style={{ textAlign: 'center', padding: '2rem' }}>
+                                <p>No hay bloques para mostrar</p>
+                                <button onClick={generateNewBlock} className="btn btn-primary">
+                                    Crear primer bloque
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

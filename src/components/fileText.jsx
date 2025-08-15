@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
-import "../styles/fileUpload.css"
-
+import { useAuth } from "../hooks/useAuth";
+import apiService from "../services/apiService";
+import "../styles/fileUpload.css";
 
 export function ManejarCargaArchivo() {
     const [archivo, setArchivo] = useState(null);
@@ -8,32 +9,85 @@ export function ManejarCargaArchivo() {
     const [isLoading, setIsLoading] = useState(false);
     const [isDragOver, setIsDragOver] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
     const fileInputRef = useRef(null);
+    const { isAuthenticated } = useAuth();
+
+    const showMessage = (msg, type) => {
+        setMessage(msg);
+        setMessageType(type);
+        setTimeout(() => {
+            setMessage('');
+            setMessageType('');
+        }, 5000);
+    };
 
     const onSubmit = async (event) => {
         event.preventDefault();
+        
+        if (!isAuthenticated) {
+            showMessage('Debes estar autenticado para subir archivos', 'error');
+            return;
+        }
+
+        if (!archivo && !texto.trim()) {
+            showMessage('Debes proporcionar un archivo o texto', 'error');
+            return;
+        }
+
         setIsLoading(true);
         setUploadProgress(0);
 
-        const interval = setInterval(() => {
-            setUploadProgress(prev => {
-                if (prev >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        VerificarArchivo(archivo?.name || '');
-                        VerificarTexto(texto);
-                        setIsLoading(false);
-                        setUploadProgress(0);
-                    }, 500);
-                    return 100;
-                }
-                return prev + 10;
-            });
-        }, 100);
+        try {
+            let result;
+            
+            if (archivo) {
+                // Subir archivo
+                result = await apiService.uploadFile(archivo, texto);
+                showMessage(`Archivo ${archivo.name} procesado exitosamente como bloque #${result.blockIndex}`, 'success');
+            } else if (texto.trim()) {
+                // Crear bloque de texto
+                result = await apiService.createTextBlock(texto);
+                showMessage(`Texto procesado exitosamente como bloque #${result.blockIndex}`, 'success');
+            }
+
+            setArchivo(null);
+            setTexto('');
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage(error.message || 'Error al procesar la solicitud', 'error');
+        } finally {
+            setIsLoading(false);
+            setUploadProgress(0);
+        }
     };
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
+        if (file) {
+            validateAndSetFile(file);
+        }
+    };
+
+    const validateAndSetFile = (file) => {
+        const allowedTypes = ['application/pdf', 'text/plain'];
+        const maxSize = 10 * 1024 * 1024;
+
+        if (!allowedTypes.includes(file.type)) {
+            showMessage('Solo se permiten archivos PDF y TXT', 'error');
+            return;
+        }
+
+        if (file.size > maxSize) {
+            showMessage('El archivo excede el tamaño máximo de 10MB', 'error');
+            return;
+        }
+
         setArchivo(file);
     };
 
@@ -41,8 +95,8 @@ export function ManejarCargaArchivo() {
         event.preventDefault();
         setIsDragOver(false);
         const file = event.dataTransfer.files[0];
-        if (file && (file.type === 'application/pdf' || file.type === 'text/plain')) {
-            setArchivo(file);
+        if (file) {
+            validateAndSetFile(file);
         }
     };
 
@@ -78,20 +132,14 @@ export function ManejarCargaArchivo() {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
-    function VerificarArchivo(nombreArchivo) {
-        if (!nombreArchivo || nombreArchivo.trim().length === 0) {
-            alert("No se ha ingresado ningún archivo, intente de nuevo");
-        } else {
-            alert(`El archivo ${nombreArchivo} se ha cargado correctamente`);
-        }
-    }
-
-    function VerificarTexto(texto) {
-        if (texto.trim().length === 0) {
-            alert("No se ingresó ningún comentario, intente de nuevo");
-        } else {
-            alert(`Comentario registrado correctamente: ${texto.substring(0, 50)}...`);
-        }
+    if (!isAuthenticated) {
+        return (
+            <div className="upload-container">
+                <div className="error-message">
+                    Debes iniciar sesión para acceder a esta funcionalidad
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -107,6 +155,13 @@ export function ManejarCargaArchivo() {
                             Suba un archivo PDF o TXT para procesarlo en la blockchain
                         </p>
                     </div>
+
+                    {message && (
+                        <div className={`${messageType}-message`}>
+                            {message}
+                        </div>
+                    )}
+                    
                     <div className="file-section">
                         <label className="section-label">
                             <i className="bi bi-file-earmark-arrow-up"></i>
@@ -181,10 +236,11 @@ export function ManejarCargaArchivo() {
                                 value={texto}
                                 onChange={(event) => setTexto(event.target.value)}
                                 rows="6"
+                                maxLength="500"
                             />
                             <div className="textarea-footer">
                                 <div className="char-counter">
-                                    <span className={texto.length > 500 ? 'warning' : ''}>
+                                    <span className={texto.length > 450 ? 'warning' : ''}>
                                         {texto.length}/500
                                     </span>
                                 </div>
@@ -205,7 +261,7 @@ export function ManejarCargaArchivo() {
                     {isLoading && (
                         <div className="progress-section">
                             <div className="progress-info">
-                                <span>Procesando archivo...</span>
+                                <span>Procesando en blockchain...</span>
                                 <span>{uploadProgress}%</span>
                             </div>
                             <div className="progress-bar">

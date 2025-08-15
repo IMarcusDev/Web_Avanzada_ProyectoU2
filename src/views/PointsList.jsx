@@ -1,56 +1,45 @@
+// src/views/PointsList.jsx
 import React, { useState, useEffect } from "react";
+import { userService } from "../services/userService";
 import "../styles/points.css";
 
 export const PointsList = () => {
     const [personas, setPersonas] = useState([]);
     const [filteredPersonas, setFilteredPersonas] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [sortBy, setSortBy] = useState('id');
-    const [sortOrder, setSortOrder] = useState('asc');
+    const [sortBy, setSortBy] = useState('points');
+    const [sortOrder, setSortOrder] = useState('desc');
     const [showStats, setShowStats] = useState(false);
     const [selectedPersona, setSelectedPersona] = useState(null);
     const [loading, setLoading] = useState(true);
-
-    const names = ["Marcos", "Juan", "Carlos", "Mateo"];
-    const surnames = ["Escobar", "Granda", "Ñato", "Sosa"];
-    const avatars = [
-        "https://ui-avatars.com/api/?name=Marcos+Escobar&background=667eea&color=fff&size=40",
-        "https://ui-avatars.com/api/?name=Juan+Granda&background=764ba2&color=fff&size=40",
-        "https://ui-avatars.com/api/?name=Carlos+Nato&background=43e97b&color=fff&size=40",
-        "https://ui-avatars.com/api/?name=Mateo+Sosa&background=f5576c&color=fff&size=40"
-    ];
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        setTimeout(() => {
-            const chainData = JSON.parse(localStorage.getItem("hashes")) || [];
-            
-            const personasData = chainData.map((element, idx) => {
-                const numero = Math.floor(Math.random() * 4);
-                const points = Math.floor(Math.random() * 100) + 1;
-                return {
-                    id: idx,
-                    name: names[numero],
-                    surname: surnames[numero],
-                    avatar: avatars[numero],
-                    point: points,
-                    chain: element.hash,
-                    timestamp: Date.now() - Math.random() * 86400000 * 30,
-                    status: points > 70 ? 'high' : points > 40 ? 'medium' : 'low',
-                    efficiency: (points / 100 * 100).toFixed(1)
-                };
-            });
-
-            setPersonas(personasData);
-            setFilteredPersonas(personasData);
-            setLoading(false);
-        }, 1000);
+        loadUsersWithPoints();
     }, []);
+
+    const loadUsersWithPoints = async () => {
+        try {
+            setLoading(true);
+            const users = await userService.getUsersWithPoints();
+            setPersonas(users);
+            setFilteredPersonas(users);
+            setError('');
+        } catch (error) {
+            console.error('Error loading users:', error);
+            setError('Error al cargar usuarios. Verifique que el servidor esté funcionando.');
+            setPersonas([]);
+            setFilteredPersonas([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         let filtered = personas.filter(persona => 
-            persona.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            persona.surname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            persona.chain.toLowerCase().includes(searchTerm.toLowerCase())
+            (persona.name && persona.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (persona.surname && persona.surname.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (persona.chain && persona.chain.toLowerCase().includes(searchTerm.toLowerCase()))
         );
 
         filtered.sort((a, b) => {
@@ -86,24 +75,18 @@ export const PointsList = () => {
         }
     };
 
-    const generateRandomData = () => {
-        const newData = Array.from({ length: 5 }, (_, idx) => {
-            const numero = Math.floor(Math.random() * 4);
-            const points = Math.floor(Math.random() * 100) + 1;
-            return {
-                id: personas.length + idx,
-                name: names[numero],
-                surname: surnames[numero],
-                avatar: avatars[numero],
-                point: points,
-                chain: `hash_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
-                timestamp: Date.now(),
-                status: points > 70 ? 'high' : points > 40 ? 'medium' : 'low',
-                efficiency: (points / 100 * 100).toFixed(1)
-            };
-        });
-        
-        setPersonas([...personas, ...newData]);
+    const generateRandomData = async () => {
+        try {
+            const response = await userService.generateRandomUsers(5);
+            if (response.success) {
+                await loadUsersWithPoints(); // Recargar la lista
+            } else {
+                setError(response.error || 'Error al generar usuarios');
+            }
+        } catch (error) {
+            console.error('Error generating random users:', error);
+            setError('Error al generar usuarios aleatorios');
+        }
     };
 
     const exportData = () => {
@@ -123,27 +106,57 @@ export const PointsList = () => {
         URL.revokeObjectURL(url);
     };
 
-    const clearAllData = () => {
+    const clearAllData = async () => {
         if (window.confirm('¿Estás seguro de que quieres eliminar todos los datos?')) {
-            setPersonas([]);
-            setFilteredPersonas([]);
-            localStorage.removeItem('hashes');
+            try {
+                const response = await userService.clearAllUsers();
+                if (response.success) {
+                    await loadUsersWithPoints();
+                } else {
+                    setError(response.error || 'Error al limpiar usuarios');
+                }
+            } catch (error) {
+                console.error('Error clearing users:', error);
+                setError('Error al limpiar todos los usuarios');
+            }
         }
     };
 
-    const getStats = () => {
-        if (filteredPersonas.length === 0) return { avg: 0, max: 0, min: 0, total: 0 };
-        
-        const points = filteredPersonas.map(p => p.point);
-        return {
-            avg: (points.reduce((a, b) => a + b, 0) / points.length).toFixed(1),
-            max: Math.max(...points),
-            min: Math.min(...points),
-            total: points.reduce((a, b) => a + b, 0)
-        };
+    const getStats = async () => {
+        try {
+            const statsData = await userService.getUserStats();
+            return {
+                avg: statsData.averagePoints || 0,
+                max: statsData.maxPoints || 0,
+                min: 0, // La API no devuelve min, lo calculamos localmente
+                total: statsData.totalPoints || 0,
+                count: statsData.totalUsers || 0
+            };
+        } catch (error) {
+            console.error('Error getting stats:', error);
+            // Fallback a cálculo local
+            if (filteredPersonas.length === 0) return { avg: 0, max: 0, min: 0, total: 0, count: 0 };
+            
+            const points = filteredPersonas.map(p => p.point || 0);
+            return {
+                avg: (points.reduce((a, b) => a + b, 0) / points.length).toFixed(1),
+                max: Math.max(...points),
+                min: Math.min(...points),
+                total: points.reduce((a, b) => a + b, 0),
+                count: filteredPersonas.length
+            };
+        }
     };
 
-    const stats = getStats();
+    const [stats, setStats] = useState({ avg: 0, max: 0, min: 0, total: 0, count: 0 });
+
+    useEffect(() => {
+        const updateStats = async () => {
+            const newStats = await getStats();
+            setStats(newStats);
+        };
+        updateStats();
+    }, [filteredPersonas]);
 
     if (loading) {
         return (
@@ -162,6 +175,34 @@ export const PointsList = () => {
                 <h1 className="points-title">Listado de Puntos</h1>
                 <p className="points-subtitle">Sistema de seguimiento y análisis de puntos blockchain</p>
             </div>
+
+            {error && (
+                <div className="error-banner" style={{
+                    backgroundColor: 'rgba(245, 87, 108, 0.1)',
+                    border: '1px solid rgba(245, 87, 108, 0.3)',
+                    color: '#721c24',
+                    padding: '0.75rem',
+                    borderRadius: '8px',
+                    marginBottom: '1rem',
+                    textAlign: 'center'
+                }}>
+                    {error}
+                    <button 
+                        onClick={loadUsersWithPoints}
+                        style={{
+                            marginLeft: '1rem',
+                            padding: '0.25rem 0.75rem',
+                            backgroundColor: '#667eea',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Reintentar
+                    </button>
+                </div>
+            )}
 
             <div className="points-toolbar">
                 <div className="search-container">
@@ -208,6 +249,14 @@ export const PointsList = () => {
                         <i className="bi bi-trash"></i>
                         Limpiar
                     </button>
+                    <button 
+                        onClick={loadUsersWithPoints}
+                        className="btn btn-info"
+                        title="Recargar datos"
+                    >
+                        <i className="bi bi-arrow-clockwise"></i>
+                        Recargar
+                    </button>
                 </div>
             </div>
 
@@ -219,7 +268,7 @@ export const PointsList = () => {
                                 <i className="bi bi-people"></i>
                             </div>
                             <div className="stat-content">
-                                <div className="stat-number">{filteredPersonas.length}</div>
+                                <div className="stat-number">{stats.count}</div>
                                 <div className="stat-label">Total Usuarios</div>
                             </div>
                         </div>
@@ -260,7 +309,7 @@ export const PointsList = () => {
                         <div key={persona.id} className="point-card" style={{ animationDelay: `${index * 0.1}s` }}>
                             <div className="card-header">
                                 <img 
-                                    src={persona.avatar} 
+                                    src={persona.avatar || `https://ui-avatars.com/api/?name=${persona.name}+${persona.surname}&background=667eea&color=fff&size=40`} 
                                     alt={`${persona.name} ${persona.surname}`}
                                     className="user-avatar"
                                 />
@@ -269,23 +318,23 @@ export const PointsList = () => {
                                     <p className="user-id">ID: {persona.id}</p>
                                 </div>
                                 <div className="points-display">
-                                    <span className="points-number">{persona.point}</span>
+                                    <span className="points-number">{persona.point || 0}</span>
                                     <span className="points-label">puntos</span>
                                 </div>
                             </div>
 
                             <div className="card-body">
                                 <div className="status-row">
-                                    <span className={`status-badge ${persona.status}`}>
+                                    <span className={`status-badge ${persona.status || 'medium'}`}>
                                         {persona.status === 'high' ? 'Alto' : 
                                          persona.status === 'medium' ? 'Medio' : 'Bajo'}
                                     </span>
                                     <div className="efficiency-display">
-                                        <span className="efficiency-text">{persona.efficiency}% eficiencia</span>
+                                        <span className="efficiency-text">{persona.efficiency || 0}% eficiencia</span>
                                         <div className="efficiency-bar">
                                             <div 
                                                 className="efficiency-fill" 
-                                                style={{ width: `${persona.efficiency}%` }}
+                                                style={{ width: `${persona.efficiency || 0}%` }}
                                             ></div>
                                         </div>
                                     </div>
@@ -295,15 +344,20 @@ export const PointsList = () => {
                                     <label className="chain-label">Cadena Semilla:</label>
                                     <div className="chain-display">
                                         <code className="chain-hash">
-                                            {persona.chain.substring(0, 12)}...{persona.chain.substring(persona.chain.length - 8)}
+                                            {persona.chain ? 
+                                                `${persona.chain.substring(0, 12)}...${persona.chain.substring(persona.chain.length - 8)}` :
+                                                'N/A'
+                                            }
                                         </code>
-                                        <button 
-                                            className="copy-btn"
-                                            onClick={() => navigator.clipboard.writeText(persona.chain)}
-                                            title="Copiar hash completo"
-                                        >
-                                            <i className="bi bi-clipboard"></i>
-                                        </button>
+                                        {persona.chain && (
+                                            <button 
+                                                className="copy-btn"
+                                                onClick={() => navigator.clipboard.writeText(persona.chain)}
+                                                title="Copiar hash completo"
+                                            >
+                                                <i className="bi bi-clipboard"></i>
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
 
@@ -319,6 +373,10 @@ export const PointsList = () => {
                                     <button 
                                         className="action-btn edit-btn"
                                         title="Editar"
+                                        onClick={() => {
+                                            // Aquí puedes implementar la funcionalidad de editar
+                                            console.log('Editar usuario:', persona.id);
+                                        }}
                                     >
                                         <i className="bi bi-pencil"></i>
                                         Editar
@@ -355,7 +413,7 @@ export const PointsList = () => {
                         <div className="modal-body">
                             <div className="user-profile">
                                 <img 
-                                    src={selectedPersona.avatar} 
+                                    src={selectedPersona.avatar || `https://ui-avatars.com/api/?name=${selectedPersona.name}+${selectedPersona.surname}&background=667eea&color=fff&size=80`} 
                                     alt={`${selectedPersona.name} ${selectedPersona.surname}`}
                                     className="profile-avatar"
                                 />
@@ -368,15 +426,15 @@ export const PointsList = () => {
                             <div className="details-grid">
                                 <div className="detail-item">
                                     <label>Puntos:</label>
-                                    <span className="detail-value">{selectedPersona.point}</span>
+                                    <span className="detail-value">{selectedPersona.point || 0}</span>
                                 </div>
                                 <div className="detail-item">
                                     <label>Eficiencia:</label>
-                                    <span className="detail-value">{selectedPersona.efficiency}%</span>
+                                    <span className="detail-value">{selectedPersona.efficiency || 0}%</span>
                                 </div>
                                 <div className="detail-item">
                                     <label>Estado:</label>
-                                    <span className={`status-badge ${selectedPersona.status}`}>
+                                    <span className={`status-badge ${selectedPersona.status || 'medium'}`}>
                                         {selectedPersona.status === 'high' ? 'Alto' : 
                                          selectedPersona.status === 'medium' ? 'Medio' : 'Bajo'}
                                     </span>
@@ -384,19 +442,24 @@ export const PointsList = () => {
                                 <div className="detail-item full-width">
                                     <label>Cadena Semilla:</label>
                                     <div className="chain-detail">
-                                        <code>{selectedPersona.chain}</code>
-                                        <button 
-                                            className="copy-chain-btn"
-                                            onClick={() => navigator.clipboard.writeText(selectedPersona.chain)}
-                                        >
-                                            <i className="bi bi-clipboard"></i>
-                                        </button>
+                                        <code>{selectedPersona.chain || 'N/A'}</code>
+                                        {selectedPersona.chain && (
+                                            <button 
+                                                className="copy-chain-btn"
+                                                onClick={() => navigator.clipboard.writeText(selectedPersona.chain)}
+                                            >
+                                                <i className="bi bi-clipboard"></i>
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="detail-item">
                                     <label>Fecha:</label>
                                     <span className="detail-value">
-                                        {new Date(selectedPersona.timestamp).toLocaleString()}
+                                        {selectedPersona.timestamp ? 
+                                            new Date(selectedPersona.timestamp).toLocaleString() :
+                                            'N/A'
+                                        }
                                     </span>
                                 </div>
                             </div>

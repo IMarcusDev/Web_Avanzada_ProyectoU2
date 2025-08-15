@@ -1,59 +1,67 @@
+// src/components/tableHash.jsx
 import { useState, useEffect } from "react";
-import { Hash } from "./chain";
+import { blockchainService } from "../services/blockchainService";
 import '../styles/chain.css';
-
-const first_seed = 'ESPE';
 
 export function HashTable() {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('time');
+  const [sortBy, setSortBy] = useState('timestamp');
   const [sortOrder, setSortOrder] = useState('desc');
   const [showStats, setShowStats] = useState(false);
-  const [hashChain, setHashChain] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const storedData = JSON.parse(localStorage.getItem('data'))?.rows || [];
-    setData(storedData);
-    setFilteredData(storedData);
-    generateHashChain(storedData);
+    loadBlockchain();
   }, []);
 
-  const generateHashChain = (dataArray) => {
-    let currentSeed = first_seed;
-    const chain = [];
-    
-    dataArray.forEach((element, index) => {
-      const hashData = {
-        ...element,
-        index,
-        previousHash: currentSeed,
-        hash: generateHashForChain(element.text, currentSeed, element.time)
-      };
+  const loadBlockchain = async () => {
+    try {
+      setLoading(true);
+      const response = await blockchainService.getBlockchain();
       
-      chain.push(hashData);
-      currentSeed = hashData.hash;
-    });
-    
-    setHashChain(chain);
-    
-    localStorage.setItem('hashes', JSON.stringify(chain.map(h => ({ id: h.index, hash: h.hash }))));
-  };
-
-  const generateHashForChain = (chain, seed, time) => {
-    const data = chain + seed + time;
-    return btoa(data).replace(/[^a-zA-Z0-9]/g, '').substring(0, 64).toLowerCase();
+      // Los datos ya vienen en el formato correcto desde tu API
+      const blockchainData = response.chain || [];
+      
+      setData(blockchainData);
+      setFilteredData(blockchainData);
+      setError('');
+    } catch (error) {
+      console.error('Error loading blockchain:', error);
+      setError('Error al cargar la blockchain. Verifique que el servidor esté funcionando.');
+      
+      // Fallback a datos locales si existen
+      const localData = JSON.parse(localStorage.getItem('data'))?.rows || [];
+      if (localData.length > 0) {
+        setData(localData);
+        setFilteredData(localData);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    let filtered = hashChain.filter(item => 
-      item.text.toLowerCase().includes(searchTerm.toLowerCase())
+    let filtered = data.filter(item => 
+      (item.data && item.data.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (item.hash && item.hash.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     filtered.sort((a, b) => {
-      const aVal = sortBy === 'time' ? parseInt(a.time) : a.text;
-      const bVal = sortBy === 'time' ? parseInt(b.time) : b.text;
+      let aVal, bVal;
+      
+      if (sortBy === 'timestamp') {
+        aVal = a.timestamp || 0;
+        bVal = b.timestamp || 0;
+      } else if (sortBy === 'data') {
+        aVal = a.data || '';
+        bVal = b.data || '';
+      } else {
+        aVal = a[sortBy] || '';
+        bVal = b[sortBy] || '';
+      }
       
       if (sortOrder === 'asc') {
         return aVal > bVal ? 1 : -1;
@@ -63,7 +71,7 @@ export function HashTable() {
     });
 
     setFilteredData(filtered);
-  }, [hashChain, searchTerm, sortBy, sortOrder]);
+  }, [data, searchTerm, sortBy, sortOrder]);
 
   const handleSort = (field) => {
     if (sortBy === field) {
@@ -74,13 +82,18 @@ export function HashTable() {
     }
   };
 
-  const clearAllData = () => {
+  const clearAllData = async () => {
     if (window.confirm('¿Estás seguro de que quieres eliminar todas las cadenas?')) {
-      localStorage.removeItem('data');
-      localStorage.removeItem('hashes');
-      setData([]);
-      setFilteredData([]);
-      setHashChain([]);
+      try {
+        // Limpiar datos locales
+        localStorage.removeItem('data');
+        localStorage.removeItem('hashes');
+        
+        // Recargar desde la API
+        await loadBlockchain();
+      } catch (error) {
+        console.error('Error clearing data:', error);
+      }
     }
   };
 
@@ -95,39 +108,96 @@ export function HashTable() {
     URL.revokeObjectURL(url);
   };
 
-  const addRandomData = () => {
-    const randomTexts = [
-      'Transacción aleatoria', 'Nuevo bloque', 'Datos de prueba', 
-      'Operación blockchain', 'Hash generado', 'Bloque validado'
-    ];
-    const randomText = randomTexts[Math.floor(Math.random() * randomTexts.length)];
-    const newTime = Date.now().toString();
-    
-    const currentData = JSON.parse(localStorage.getItem('data')) || { rows: [] };
-    currentData.rows.push({ text: randomText, time: newTime });
-    localStorage.setItem('data', JSON.stringify(currentData));
-    
-    setData(currentData.rows);
-    generateHashChain(currentData.rows);
+  const addRandomData = async () => {
+    try {
+      const randomTexts = [
+        'Transacción aleatoria', 'Nuevo bloque', 'Datos de prueba', 
+        'Operación blockchain', 'Hash generado', 'Bloque validado'
+      ];
+      const randomText = randomTexts[Math.floor(Math.random() * randomTexts.length)];
+      
+      const response = await blockchainService.createTextBlock(randomText);
+      
+      if (response.success) {
+        await loadBlockchain(); // Recargar la blockchain
+      } else {
+        setError('Error al agregar datos aleatorios: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Error adding random data:', error);
+      setError('Error al agregar datos aleatorios');
+    }
   };
 
-  const stats = {
-    total: filteredData.length,
-    avgTime: filteredData.length > 0 
-      ? (filteredData.reduce((sum, item) => sum + parseInt(item.time), 0) / filteredData.length).toFixed(0)
-      : 0,
-    oldestTime: filteredData.length > 0 
-      ? Math.min(...filteredData.map(item => parseInt(item.time)))
-      : 0,
-    newestTime: filteredData.length > 0 
-      ? Math.max(...filteredData.map(item => parseInt(item.time)))
-      : 0
+  const getStats = () => {
+    if (filteredData.length === 0) return { total: 0, avgTime: 0, oldestTime: 0, newestTime: 0 };
+    
+    const timestamps = filteredData.map(item => item.timestamp).filter(t => t);
+    
+    return {
+      total: filteredData.length,
+      avgTime: timestamps.length > 0 
+        ? (timestamps.reduce((sum, t) => sum + t, 0) / timestamps.length).toFixed(0)
+        : 0,
+      oldestTime: timestamps.length > 0 ? Math.min(...timestamps) : 0,
+      newestTime: timestamps.length > 0 ? Math.max(...timestamps) : 0
+    };
   };
+
+  const stats = getStats();
+
+  if (loading) {
+    return (
+      <div className="hash-container">
+        <div style={{ textAlign: 'center', padding: '3rem' }}>
+          <div className="loading-spinner" style={{ 
+            width: '40px', 
+            height: '40px', 
+            border: '4px solid #f3f3f3',
+            borderTop: '4px solid #667eea',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 1rem'
+          }}></div>
+          <p>Cargando blockchain...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="hash-container">
       <div className="hash-header">
         <h3 className="display-3">Listado de Cadenas Generadas</h3>
+        
+        {error && (
+          <div className="error-banner" style={{
+            backgroundColor: 'rgba(245, 87, 108, 0.1)',
+            border: '1px solid rgba(245, 87, 108, 0.3)',
+            color: '#721c24',
+            padding: '0.75rem',
+            borderRadius: '8px',
+            marginBottom: '1rem',
+            textAlign: 'center'
+          }}>
+            {error}
+            <button 
+              onClick={loadBlockchain}
+              style={{
+                marginLeft: '1rem',
+                padding: '0.25rem 0.75rem',
+                backgroundColor: '#667eea',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
+        
         <div className="hash-toolbar">
           <div className="search-container">
             <i className="bi bi-search search-icon"></i>
@@ -169,6 +239,13 @@ export function HashTable() {
             >
               <i className="bi bi-trash"></i>
             </button>
+            <button 
+              onClick={loadBlockchain}
+              className="btn btn-info"
+              title="Recargar"
+            >
+              <i className="bi bi-arrow-clockwise"></i>
+            </button>
           </div>
         </div>
       </div>
@@ -182,7 +259,7 @@ export function HashTable() {
               </div>
               <div className="stat-content">
                 <div className="stat-number">{stats.total}</div>
-                <div className="stat-label">Total Cadenas</div>
+                <div className="stat-label">Total Bloques</div>
               </div>
             </div>
             <div className="stat-card">
@@ -200,7 +277,7 @@ export function HashTable() {
               </div>
               <div className="stat-content">
                 <div className="stat-number">
-                  {stats.oldestTime ? new Date(parseInt(stats.oldestTime)).toLocaleDateString() : 'N/A'}
+                  {stats.oldestTime ? new Date(stats.oldestTime).toLocaleDateString() : 'N/A'}
                 </div>
                 <div className="stat-label">Más Antigua</div>
               </div>
@@ -211,7 +288,7 @@ export function HashTable() {
               </div>
               <div className="stat-content">
                 <div className="stat-number">
-                  {stats.newestTime ? new Date(parseInt(stats.newestTime)).toLocaleDateString() : 'N/A'}
+                  {stats.newestTime ? new Date(stats.newestTime).toLocaleDateString() : 'N/A'}
                 </div>
                 <div className="stat-label">Más Reciente</div>
               </div>
@@ -225,40 +302,62 @@ export function HashTable() {
           <thead className="thead-light">
             <tr>
               <th 
-                onClick={() => handleSort('text')}
+                onClick={() => handleSort('data')}
                 className="sortable-header"
               >
-                Cadena 
-                <i className={`bi bi-arrow-${sortBy === 'text' ? (sortOrder === 'asc' ? 'up' : 'down') : 'up-down'}`}></i>
+                Datos del Bloque
+                <i className={`bi bi-arrow-${sortBy === 'data' ? (sortOrder === 'asc' ? 'up' : 'down') : 'up-down'}`}></i>
               </th>
-              <th>Semilla</th>
+              <th>Hash Anterior</th>
               <th 
-                onClick={() => handleSort('time')}
+                onClick={() => handleSort('timestamp')}
                 className="sortable-header"
               >
-                Tiempo 
-                <i className={`bi bi-arrow-${sortBy === 'time' ? (sortOrder === 'asc' ? 'up' : 'down') : 'up-down'}`}></i>
+                Timestamp
+                <i className={`bi bi-arrow-${sortBy === 'timestamp' ? (sortOrder === 'asc' ? 'up' : 'down') : 'up-down'}`}></i>
               </th>
-              <th>Hash</th>
+              <th>Hash del Bloque</th>
+              <th>Nonce</th>
+              <th>Índice</th>
             </tr>
           </thead>
           <tbody>
-            {console.log(filteredData)}
             {filteredData.length > 0 ? (
               filteredData.map((element, i) => (
-                <tr key={`chain-${element.index || i}`}>
-                  <td className="chain-text">{element.text}</td>
-                  <td className="seed-text">{element.previousHash}</td>
-                  <td className="time-text">{element.time}</td>
-                  <td className="hash-text">{element.hash}</td>
+                <tr key={`block-${element.index || i}`}>
+                  <td className="chain-text">{element.data || 'Sin datos'}</td>
+                  <td className="seed-text" title={element.previousHash}>
+                    {element.previousHash ? 
+                      `${element.previousHash.substring(0, 12)}...` : 
+                      'N/A'
+                    }
+                  </td>
+                  <td className="time-text">
+                    {element.timestamp ? 
+                      new Date(element.timestamp).toLocaleString() : 
+                      'N/A'
+                    }
+                  </td>
+                  <td className="hash-text" title={element.hash}>
+                    {element.hash ? 
+                      `${element.hash.substring(0, 12)}...${element.hash.substring(element.hash.length - 8)}` : 
+                      'N/A'
+                    }
+                  </td>
+                  <td className="nonce-text" style={{ textAlign: 'center', fontWeight: 'bold' }}>
+                    {element.nonce || 0}
+                  </td>
+                  <td className="index-text" style={{ textAlign: 'center', fontWeight: 'bold' }}>
+                    {element.index !== undefined ? element.index : i}
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="no-data">
+                <td colSpan="6" className="no-data">
                   <div className="no-data-content">
                     <i className="bi bi-inbox"></i>
-                    <p>No hay cadenas para mostrar</p>
+                    <p>No hay bloques para mostrar</p>
                     <button onClick={addRandomData} className="btn btn-outline-primary btn-sm">
                       Agregar datos de ejemplo
                     </button>
@@ -273,7 +372,7 @@ export function HashTable() {
       {filteredData.length > 0 && (
         <div className="hash-footer">
           <div className="results-info">
-            Mostrando {filteredData.length} de {data.length} resultados
+            Mostrando {filteredData.length} de {data.length} bloques
             {searchTerm && ` para "${searchTerm}"`}
           </div>
         </div>
